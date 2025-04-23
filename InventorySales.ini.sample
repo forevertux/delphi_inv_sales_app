@@ -1,0 +1,75 @@
+[Database]
+; Database Type: SQLServer, MySQL, PostgreSQL, Oracle, SQLite
+Type=SQLServer
+
+; SQL Server Configuration
+Server=localhost
+Database=InventorySales
+Username=sa
+Password=YourPassword123
+WindowsAuth=False
+
+; MySQL Configuration (if Type=MySQL)
+; Server=localhost
+; Database=inventory_sales
+; Username=root
+; Password=yourpassword
+; Port=3306
+
+; PostgreSQL Configuration (if Type=PostgreSQL)
+; Server=localhost
+; Database=inventory_sales
+; Username=postgres
+; Password=yourpassword
+; Port=5432
+
+; Oracle Configuration (if Type=Oracle)
+; Server=localhost:1521
+; Database=ORCL
+; Username=system
+; Password=yourpassword
+
+; SQLite Configuration (if Type=SQLite)
+; Database=C:\Data\inventory.db
+
+[Sync]
+; Server URL for synchronization
+ServerURL=https://api.yourdomain.com
+; Sync interval in minutes (0 = manual only)
+AutoSyncInterval=30
+; Enable automatic sync
+AutoSyncEnabled=True
+
+[Application]
+; Application settings
+CompanyName=Your Company Name
+BranchCode=HQ001
+DefaultLanguage=en
+Theme=Light
+; Light or Dark
+
+[Security]
+; Password policy
+MinPasswordLength=6
+RequireUppercase=False
+RequireNumbers=False
+RequireSpecialChars=False
+SessionTimeout=480
+; minutes (8 hours)
+EnableRememberMe=True
+
+[Report]
+; Report settings
+DefaultReportPath=C:\Reports
+AutoOpenAfterExport=True
+DefaultExportFormat=CSV
+; CSV or PDF
+
+[Mobile]
+; Mobile-specific settings
+OfflineMode=True
+LocalDatabasePath=
+; Leave empty for auto-detect
+MaxCacheSize=100
+; MB
+EnableBackgroundSync=True
