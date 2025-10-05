@@ -3,7 +3,7 @@ unit DatabaseModule;
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  System.SysUtils, System.Classes, System.IOUtils, FireDAC.Stan.Intf, FireDAC.Stan.Option,
   FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.FMXUI.Wait,
   FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
@@ -61,7 +61,8 @@ type
     procedure SetupOracleConnection(const Server, Database, Username, Password: string);
     procedure SetupSQLiteConnection(const DatabasePath: string);
     procedure LoadConfiguration;
-    procedure CreateLocalDatabase;
+    procedure CreateLocalDatabase;
+    procedure InitializeDatabase;
   public
     function Connect: Boolean;
     procedure Disconnect;
@@ -283,6 +284,9 @@ begin
 
     // Try to connect
     FDConnection.Connected := True;
+    
+    // Initialize database schema if needed
+    InitializeDatabase;
     FIsConnected := True;
     Result := True;
 
@@ -494,4 +498,51 @@ begin
   end;
 end;
 
-end.
+
+procedure TDMDatabase.InitializeDatabase;
+var
+  Query: TFDQuery;
+  SchemaFile: string;
+  SchemaSQL: TStringList;
+begin
+  try
+    // Check if Users table exists
+    Query := TFDQuery.Create(nil);
+    try
+      Query.Connection := FDConnection;
+      try
+        Query.SQL.Text := 'SELECT COUNT(*) FROM Users';
+        Query.Open;
+        Query.Close;
+        // Table exists, no need to initialize
+        Exit;
+      except
+        // Table doesn't exist, continue with initialization
+      end;
+    finally
+      Query.Free;
+    end;
+
+    // For SQLite, execute the schema file
+    if FDatabaseType = dtSQLite then
+    begin
+      SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), 'database\schema_sqlite.sql');
+      if TFile.Exists(SchemaFile) then
+      begin
+        SchemaSQL := TStringList.Create;
+        try
+          SchemaSQL.LoadFromFile(SchemaFile);
+          FDConnection.ExecSQL(SchemaSQL.Text);
+        finally
+          SchemaSQL.Free;
+        end;
+      end;
+    end;
+
+  except
+    on E: Exception do
+      ShowMessage('Error initializing database: ' + E.Message);
+  end;
+end;
+
+end.
