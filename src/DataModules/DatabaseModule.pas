@@ -90,7 +90,7 @@ implementation
 {$R *.dfm}
 
 uses
-  System.IOUtils, FMX.Dialogs;
+  FMX.Dialogs;
 
 procedure TDMDatabase.DataModuleCreate(Sender: TObject);
 begin
