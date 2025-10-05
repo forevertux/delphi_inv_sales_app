@@ -479,7 +479,6 @@ function TSalesService.GetSalesByDateRange(StartDate, EndDate: TDateTime): TArra
 var
   Query: TFDQuery;
   SQL: string;
-  SaleList: array of TSale;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -503,13 +502,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(SaleList, Count + 1);
-      SaleList[Count] := GetSaleFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetSaleFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := SaleList;
     Query.Close;
   except
     on E: Exception do
@@ -521,8 +519,7 @@ function TSalesService.GetSalesByBranch(BranchID: Integer): TArray<TSale>;
 var
   Query: TFDQuery;
   SQL: string;
-  SaleList: array of TSale;
-  Count: Integer;
+  Count: Integer;
 begin
   SetLength(Result, 0);
   Count := 0;
@@ -544,15 +541,14 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(SaleList, Count + 1);
-      SaleList[Count] := GetSaleFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetSaleFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := SaleList;
     Query.Close;
-  except
+  except
     on E: Exception do
       ShowMessage('Error getting sales by branch: ' + E.Message);
   end;
@@ -562,8 +558,7 @@ function TSalesService.GetSalesByEmployee(EmployeeID: Integer): TArray<TSale>;
 var
   Query: TFDQuery;
   SQL: string;
-  SaleList: array of TSale;
-  Count: Integer;
+  Count: Integer;
 begin
   SetLength(Result, 0);
   Count := 0;
@@ -585,13 +580,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(SaleList, Count + 1);
-      SaleList[Count] := GetSaleFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetSaleFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := SaleList;
     Query.Close;
   except
     on E: Exception do
@@ -603,7 +597,6 @@ function TSalesService.GetTodaysSales: TArray<TSale>;
 var
   Query: TFDQuery;
   SQL: string;
-  SaleList: array of TSale;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -625,13 +618,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(SaleList, Count + 1);
-      SaleList[Count] := GetSaleFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetSaleFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := SaleList;
     Query.Close;
   except
     on E: Exception do
@@ -643,7 +635,6 @@ function TSalesService.GetSaleItems(SaleID: Integer): TArray<TSaleItem>;
 var
   Query: TFDQuery;
   SQL: string;
-  ItemList: array of TSaleItem;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -665,14 +656,13 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(ItemList, Count + 1);
-      ItemList[Count] := GetSaleItemFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetSaleItemFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := ItemList;
-    Query.Close;
+        Query.Close;
   except
     on E: Exception do
       ShowMessage('Error getting sale items: ' + E.Message);
