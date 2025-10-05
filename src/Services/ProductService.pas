@@ -30,7 +30,7 @@ type
   end;
 
 var
-  ProductService: TProductService;
+  GProductService: TProductService;
 
 implementation
 
