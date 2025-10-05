@@ -68,7 +68,7 @@ type
   end;
 
 var
-  SyncService: TSyncService;
+  GSyncService: TSyncService;
 
 implementation
 
