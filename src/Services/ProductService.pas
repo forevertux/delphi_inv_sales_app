@@ -199,7 +199,6 @@ function TProductService.GetAllProducts: TArray<TProduct>;
 var
   Query: TFDQuery;
   SQL: string;
-  ProductList: array of TProduct;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -220,13 +219,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(ProductList, Count + 1);
-      ProductList[Count] := GetProductFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetProductFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := ProductList;
     Query.Close;
   except
     on E: Exception do
@@ -238,7 +236,6 @@ function TProductService.GetProductsByCategory(CategoryID: Integer): TArray<TPro
 var
   Query: TFDQuery;
   SQL: string;
-  ProductList: array of TProduct;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -261,13 +258,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(ProductList, Count + 1);
-      ProductList[Count] := GetProductFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetProductFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := ProductList;
     Query.Close;
   except
     on E: Exception do
@@ -279,7 +275,6 @@ function TProductService.GetProductsByBranch(BranchID: Integer): TArray<TProduct
 var
   Query: TFDQuery;
   SQL: string;
-  ProductList: array of TProduct;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -302,13 +297,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(ProductList, Count + 1);
-      ProductList[Count] := GetProductFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetProductFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := ProductList;
     Query.Close;
   except
     on E: Exception do
@@ -320,7 +314,6 @@ function TProductService.GetLowStockProducts: TArray<TProduct>;
 var
   Query: TFDQuery;
   SQL: string;
-  ProductList: array of TProduct;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -342,15 +335,14 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(ProductList, Count + 1);
-      ProductList[Count] := GetProductFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetProductFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
+    Query.Close;
+  except
 
-    Result := ProductList;
-    Query.Close;
-  except
     on E: Exception do
       ShowMessage('Error getting low stock products: ' + E.Message);
   end;
@@ -360,7 +352,6 @@ function TProductService.SearchProducts(SearchText: string): TArray<TProduct>;
 var
   Query: TFDQuery;
   SQL: string;
-  ProductList: array of TProduct;
   Count: Integer;
   SearchPattern: string;
 begin
@@ -397,13 +388,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(ProductList, Count + 1);
-      ProductList[Count] := GetProductFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetProductFromQuery(Query);
       Inc(Count);
       Query.Next;
-    end;
-
-    Result := ProductList;
+    end;
+
     Query.Close;
   except
     on E: Exception do
