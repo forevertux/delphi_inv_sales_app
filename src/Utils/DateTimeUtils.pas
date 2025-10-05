@@ -96,7 +96,7 @@ end;
 
 function IsThisMonth(const DateTime: TDateTime): Boolean;
 begin
-  Result := System.DateUtils.IsInSameMonth(DateTime, Now);
+  Result := (YearOf(DateTime) = YearOf(Now)) and (MonthOf(DateTime) = MonthOf(Now));
 end;
 
 end.
