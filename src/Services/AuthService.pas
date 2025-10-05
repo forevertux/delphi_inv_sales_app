@@ -460,7 +460,6 @@ function TAuthService.GetAllUsers: TArray<TUser>;
 var
   Query: TFDQuery;
   SQL: string;
-  UserList: array of TUser;
   Count: Integer;
 begin
   SetLength(Result, 0);
@@ -477,13 +476,12 @@ begin
     Query.First;
     while not Query.Eof do
     begin
-      SetLength(UserList, Count + 1);
-      UserList[Count] := GetUserFromQuery(Query);
+      SetLength(Result, Count + 1);
+      Result[Count] := GetUserFromQuery(Query);
       Inc(Count);
       Query.Next;
     end;
 
-    Result := UserList;
     Query.Close;
   except
     on E: Exception do
