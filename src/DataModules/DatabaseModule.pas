@@ -216,10 +216,23 @@ begin
   else
     FullPath := DatabasePath;
 
+  // Normalize path separators
+  FullPath := StringReplace(FullPath, '/', '\', [rfReplaceAll]);
+
   // Create directory if it doesn't exist
   DBDir := ExtractFilePath(FullPath);
   if not TDirectory.Exists(DBDir) then
-    TDirectory.CreateDirectory(DBDir);
+  begin
+    try
+      TDirectory.CreateDirectory(DBDir);
+    except
+      on E: Exception do
+        ShowMessage('Error creating database directory: ' + DBDir + #13#10 + E.Message);
+    end;
+  end;
+
+  // Show debug info
+  ShowMessage('Database will be created at: ' + FullPath + #13#10 + 'Directory exists: ' + BoolToStr(TDirectory.Exists(DBDir), True));
 
   FDConnection.DriverName := 'SQLite';
   FDConnection.Params.Clear;
