@@ -65,7 +65,8 @@ implementation
 
 uses
   AuthService, SalesService, ProductService, LoginForm,
-  InventoryForm, SalesForm, ReportsForm, FMX.DialogService;
+  InventoryForm, SalesForm, ReportsForm, FMX.DialogService;,
+  SaleEntity, ProductEntity;
 
 { TfrmMain }
 
@@ -90,7 +91,7 @@ end;
 procedure TfrmMain.SetupUserInterface;
 begin
   // Display user information
-  if Assigned(AuthService) and GAuthService.IsAuthenticated then
+  if Assigned(GAuthService) and GAuthService.IsAuthenticated then
   begin
     lblUserInfo.Text := 'User: ' + GAuthService.CurrentUser.FullName;
   end
@@ -103,7 +104,7 @@ end;
 procedure TfrmMain.SetRoleBasedVisibility;
 begin
   // Hide Users tab for non-admin users
-  if Assigned(AuthService) and GAuthService.IsAuthenticated then
+  if Assigned(GAuthService) and GAuthService.IsAuthenticated then
   begin
     TabUsers.Visible := GAuthService.CurrentUser.CanAccessUserManagement;
     TabReports.Visible := GAuthService.CurrentUser.CanAccessReports;
