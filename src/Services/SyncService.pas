@@ -3,7 +3,7 @@ unit SyncService;
 interface
 
 uses
-  System.SysUtils, System.Classes, FireDAC.Comp.Client, Data.DB,
+  System.SysUtils, System.Classes, System.StrUtils, FireDAC.Comp.Client, Data.DB,
   System.DateUtils, System.JSON, System.NetEncoding, System.Net.HttpClient;
 
 type
@@ -23,11 +23,8 @@ type
     function StringToOperation(const Str: string): TSyncOperation;
     function StatusToString(Status: TSyncStatus): string;
     function GetTableQuery(const TableName: string): TFDQuery;
-    function SyncTableToServer(const TableName: string): Boolean;
-    function SyncTableFromServer(const TableName: string): Boolean;
     function ApplyServerRecord(const TableName: string; RecordData: TJSONObject): Boolean;
     function DeleteLocalRecord(const TableName: string; RecordID: Integer): Boolean;
-    function ResolveConflict(const TableName: string; LocalData, ServerData: TJSONObject): Boolean;
     function GetRecordAsJSON(Query: TFDQuery; const TableName: string): TJSONObject;
     function UploadChangesToServer(Changes: TJSONArray): Boolean;
     function DownloadChangesFromServer: TJSONArray;
