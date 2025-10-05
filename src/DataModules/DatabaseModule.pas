@@ -515,8 +515,6 @@ end;
 procedure TDMDatabase.InitializeDatabase;
 var
   Query: TFDQuery;
-  SchemaFile: string;
-  SchemaSQL: TStringList;
 begin
   try
     // Check if Users table exists
@@ -536,24 +534,132 @@ begin
       Query.Free;
     end;
 
-    // For SQLite, execute the schema file
+    // For SQLite, create the schema directly
     if FDatabaseType = dtSQLite then
     begin
-      // Try multiple locations for the schema file
-      SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), 'database\schema_sqlite.sql');
-      if not TFile.Exists(SchemaFile) then
-        SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), '..\..', 'database\schema_sqlite.sql');
+      // Create Branches table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Branches (' +
+        'BranchID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'BranchCode TEXT NOT NULL UNIQUE, ' +
+        'BranchName TEXT NOT NULL, ' +
+        'Address TEXT, ' +
+        'City TEXT, ' +
+        'Phone TEXT, ' +
+        'Email TEXT, ' +
+        'IsActive INTEGER DEFAULT 1, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)');
 
-      if TFile.Exists(SchemaFile) then
-      begin
-        SchemaSQL := TStringList.Create;
-        try
-          SchemaSQL.LoadFromFile(SchemaFile);
-          FDConnection.ExecSQL(SchemaSQL.Text);
-        finally
-          SchemaSQL.Free;
-        end;
-      end;
+      // Create Categories table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Categories (' +
+        'CategoryID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'CategoryCode TEXT NOT NULL UNIQUE, ' +
+        'CategoryName TEXT NOT NULL, ' +
+        'Description TEXT, ' +
+        'IsActive INTEGER DEFAULT 1, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)');
+
+      // Create Users table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Users (' +
+        'UserID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'Username TEXT NOT NULL UNIQUE, ' +
+        'PasswordHash TEXT NOT NULL, ' +
+        'FullName TEXT NOT NULL, ' +
+        'Email TEXT, ' +
+        'Role TEXT NOT NULL, ' +
+        'BranchID INTEGER, ' +
+        'IsActive INTEGER DEFAULT 1, ' +
+        'LastLogin DATETIME, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'FOREIGN KEY (BranchID) REFERENCES Branches(BranchID))');
+
+      // Create Products table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Products (' +
+        'ProductID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'ProductCode TEXT NOT NULL UNIQUE, ' +
+        'ProductName TEXT NOT NULL, ' +
+        'Description TEXT, ' +
+        'CategoryID INTEGER, ' +
+        'UnitPrice REAL NOT NULL, ' +
+        'CostPrice REAL, ' +
+        'Barcode TEXT, ' +
+        'SKU TEXT, ' +
+        'MinStockLevel INTEGER DEFAULT 0, ' +
+        'IsActive INTEGER DEFAULT 1, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'UpdatedAt DATETIME, ' +
+        'FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID))');
+
+      // Create Inventory table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Inventory (' +
+        'InventoryID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'ProductID INTEGER NOT NULL, ' +
+        'BranchID INTEGER NOT NULL, ' +
+        'Quantity INTEGER NOT NULL DEFAULT 0, ' +
+        'LastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'FOREIGN KEY (ProductID) REFERENCES Products(ProductID), ' +
+        'FOREIGN KEY (BranchID) REFERENCES Branches(BranchID), ' +
+        'UNIQUE(ProductID, BranchID))');
+
+      // Create Sales table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Sales (' +
+        'SaleID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'SaleNumber TEXT NOT NULL UNIQUE, ' +
+        'SaleDate DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'BranchID INTEGER NOT NULL, ' +
+        'EmployeeID INTEGER NOT NULL, ' +
+        'CustomerName TEXT, ' +
+        'CustomerPhone TEXT, ' +
+        'Subtotal REAL NOT NULL, ' +
+        'Tax REAL DEFAULT 0, ' +
+        'Discount REAL DEFAULT 0, ' +
+        'TotalAmount REAL NOT NULL, ' +
+        'PaymentMethod TEXT, ' +
+        'Notes TEXT, ' +
+        'IsSynced INTEGER DEFAULT 0, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'FOREIGN KEY (BranchID) REFERENCES Branches(BranchID), ' +
+        'FOREIGN KEY (EmployeeID) REFERENCES Users(UserID))');
+
+      // Create SaleItems table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS SaleItems (' +
+        'SaleItemID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'SaleID INTEGER NOT NULL, ' +
+        'ProductID INTEGER NOT NULL, ' +
+        'Quantity INTEGER NOT NULL, ' +
+        'UnitPrice REAL NOT NULL, ' +
+        'Discount REAL DEFAULT 0, ' +
+        'LineTotal REAL NOT NULL, ' +
+        'FOREIGN KEY (SaleID) REFERENCES Sales(SaleID), ' +
+        'FOREIGN KEY (ProductID) REFERENCES Products(ProductID))');
+
+      // Create SyncLog table
+      FDConnection.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS SyncLog (' +
+        'SyncID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'TableName TEXT NOT NULL, ' +
+        'RecordID INTEGER NOT NULL, ' +
+        'Operation TEXT NOT NULL, ' +
+        'SyncStatus TEXT DEFAULT ''Pending'', ' +
+        'ErrorMessage TEXT, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'SyncedAt DATETIME)');
+
+      // Insert default admin user
+      FDConnection.ExecSQL(
+        'INSERT OR IGNORE INTO Users (Username, PasswordHash, FullName, Role, IsActive) ' +
+        'VALUES (''admin'', ''$2a$10$rM8Wj5ZqKxQxJ3L3L3L3L3L3L3L3L3L3L3L3L3L3L3L3L3'', ''Administrator'', ''Admin'', 1)');
+
+      // Insert default branch
+      FDConnection.ExecSQL(
+        'INSERT OR IGNORE INTO Branches (BranchCode, BranchName, IsActive) ' +
+        'VALUES (''HQ001'', ''Head Office'', 1)');
     end;
 
   except
