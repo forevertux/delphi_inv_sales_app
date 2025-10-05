@@ -63,9 +63,9 @@ implementation
 
 {$R *.fmx}
 
-uses
-  AuthService, SalesService, ProductService, LoginForm,
-  InventoryForm, SalesForm, ReportsForm, FMX.DialogService;,
+uses
+  AuthService, SalesService, ProductService, LoginForm,
+  InventoryForm, SalesForm, ReportsForm, FMX.DialogService,
   SaleEntity, ProductEntity;
 
 { TfrmMain }
