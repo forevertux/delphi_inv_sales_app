@@ -1,0 +1,479 @@
+unit DatabaseModule;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.MSSQL,
+  FireDAC.Phys.MySQL, FireDAC.Phys.PG, FireDAC.Phys.Oracle, FireDAC.FMXUI.Wait,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.IniFiles,
+  FireDAC.Phys.SQLite, FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs,
+  FireDAC.Phys.SQLiteWrapper.Stat;
+
+type
+  TDatabaseType = (dtSQLServer, dtMySQL, dtPostgreSQL, dtOracle, dtSQLite);
+
+  TDMDatabase = class(TDataModule)
+    FDConnection: TFDConnection;
+    FDPhysMSSQLDriverLink: TFDPhysMSSQLDriverLink;
+    FDPhysMySQLDriverLink: TFDPhysMySQLDriverLink;
+    FDPhysPgDriverLink: TFDPhysPgDriverLink;
+    FDPhysOracleDriverLink: TFDPhysOracleDriverLink;
+    FDPhysSQLiteDriverLink: TFDPhysSQLiteDriverLink;
+    FDTransaction: TFDTransaction;
+    qryGeneral: TFDQuery;
+    qryProducts: TFDQuery;
+    qrySales: TFDQuery;
+    qryUsers: TFDQuery;
+    qryReports: TFDQuery;
+    procedure DataModuleCreate(Sender: TObject);
+    procedure DataModuleDestroy(Sender: TObject);
+  private
+    FConfigFile: string;
+    FDatabaseType: TDatabaseType;
+    FIsConnected: Boolean;
+    FIsOfflineMode: Boolean;
+    FLocalDBPath: string;
+    function GetConfigValue(const Section, Key, Default: string): string;
+    procedure SetupSQLServerConnection(const Server, Database, Username, Password: string; UseWindowsAuth: Boolean);
+    procedure SetupMySQLConnection(const Server, Database, Username, Password: string; Port: Integer);
+    procedure SetupPostgreSQLConnection(const Server, Database, Username, Password: string; Port: Integer);
+    procedure SetupOracleConnection(const Server, Database, Username, Password: string);
+    procedure SetupSQLiteConnection(const DatabasePath: string);
+    procedure LoadConfiguration;
+    procedure CreateLocalDatabase;
+  public
+    function Connect: Boolean;
+    procedure Disconnect;
+    function IsConnected: Boolean;
+    function ExecuteSQL(const SQL: string): Boolean;
+    function ExecuteQuery(const SQL: string; Query: TFDQuery): Boolean;
+    function GetLastInsertID: Int64;
+    procedure BeginTrans;
+    procedure CommitTrans;
+    procedure RollbackTrans;
+    function TestConnection: Boolean;
+    procedure SwitchToOfflineMode;
+    procedure SwitchToOnlineMode;
+    property DatabaseType: TDatabaseType read FDatabaseType;
+    property IsOfflineMode: Boolean read FIsOfflineMode;
+  end;
+
+var
+  DMDatabase: TDMDatabase;
+
+implementation
+
+{%CLASSGROUP 'FMX.Controls.TControl'}
+
+{$R *.dfm}
+
+uses
+  System.IOUtils, FMX.Dialogs;
+
+procedure TDMDatabase.DataModuleCreate(Sender: TObject);
+begin
+  FConfigFile := TPath.Combine(TPath.GetDocumentsPath, 'InventorySales.ini');
+  FIsConnected := False;
+  FIsOfflineMode := False;
+
+  {$IFDEF MOBILE}
+  FLocalDBPath := TPath.Combine(TPath.GetDocumentsPath, 'inventory_local.db');
+  {$ELSE}
+  FLocalDBPath := TPath.Combine(ExtractFilePath(ParamStr(0)), 'data\inventory_local.db');
+  {$ENDIF}
+
+  LoadConfiguration;
+end;
+
+procedure TDMDatabase.DataModuleDestroy(Sender: TObject);
+begin
+  if FIsConnected then
+    Disconnect;
+end;
+
+function TDMDatabase.GetConfigValue(const Section, Key, Default: string): string;
+var
+  IniFile: TIniFile;
+begin
+  Result := Default;
+  if FileExists(FConfigFile) then
+  begin
+    IniFile := TIniFile.Create(FConfigFile);
+    try
+      Result := IniFile.ReadString(Section, Key, Default);
+    finally
+      IniFile.Free;
+    end;
+  end;
+end;
+
+procedure TDMDatabase.LoadConfiguration;
+var
+  DBTypeStr: string;
+begin
+  DBTypeStr := GetConfigValue('Database', 'Type', 'SQLServer');
+
+  if SameText(DBTypeStr, 'SQLServer') then
+    FDatabaseType := dtSQLServer
+  else if SameText(DBTypeStr, 'MySQL') then
+    FDatabaseType := dtMySQL
+  else if SameText(DBTypeStr, 'PostgreSQL') then
+    FDatabaseType := dtPostgreSQL
+  else if SameText(DBTypeStr, 'Oracle') then
+    FDatabaseType := dtOracle
+  else if SameText(DBTypeStr, 'SQLite') then
+    FDatabaseType := dtSQLite
+  else
+    FDatabaseType := dtSQLServer;
+end;
+
+procedure TDMDatabase.SetupSQLServerConnection(const Server, Database, Username, Password: string; UseWindowsAuth: Boolean);
+begin
+  FDConnection.DriverName := 'MSSQL';
+  FDConnection.Params.Clear;
+  FDConnection.Params.Add('Server=' + Server);
+  FDConnection.Params.Add('Database=' + Database);
+
+  if UseWindowsAuth then
+    FDConnection.Params.Add('OSAuthent=Yes')
+  else
+  begin
+    FDConnection.Params.Add('User_Name=' + Username);
+    FDConnection.Params.Add('Password=' + Password);
+  end;
+
+  FDConnection.Params.Add('ApplicationName=InventorySales');
+  FDConnection.Params.Add('Pooled=True');
+  FDConnection.Params.Add('MARS=Yes');
+end;
+
+procedure TDMDatabase.SetupMySQLConnection(const Server, Database, Username, Password: string; Port: Integer);
+begin
+  FDConnection.DriverName := 'MySQL';
+  FDConnection.Params.Clear;
+  FDConnection.Params.Add('Server=' + Server);
+  FDConnection.Params.Add('Database=' + Database);
+  FDConnection.Params.Add('User_Name=' + Username);
+  FDConnection.Params.Add('Password=' + Password);
+  FDConnection.Params.Add('Port=' + IntToStr(Port));
+  FDConnection.Params.Add('CharacterSet=utf8mb4');
+end;
+
+procedure TDMDatabase.SetupPostgreSQLConnection(const Server, Database, Username, Password: string; Port: Integer);
+begin
+  FDConnection.DriverName := 'PG';
+  FDConnection.Params.Clear;
+  FDConnection.Params.Add('Server=' + Server);
+  FDConnection.Params.Add('Database=' + Database);
+  FDConnection.Params.Add('User_Name=' + Username);
+  FDConnection.Params.Add('Password=' + Password);
+  FDConnection.Params.Add('Port=' + IntToStr(Port));
+  FDConnection.Params.Add('CharacterSet=UTF8');
+end;
+
+procedure TDMDatabase.SetupOracleConnection(const Server, Database, Username, Password: string);
+begin
+  FDConnection.DriverName := 'Ora';
+  FDConnection.Params.Clear;
+  FDConnection.Params.Add('Server=' + Server);
+  FDConnection.Params.Add('Database=' + Database);
+  FDConnection.Params.Add('User_Name=' + Username);
+  FDConnection.Params.Add('Password=' + Password);
+  FDConnection.Params.Add('CharacterSet=UTF8');
+end;
+
+procedure TDMDatabase.SetupSQLiteConnection(const DatabasePath: string);
+begin
+  FDConnection.DriverName := 'SQLite';
+  FDConnection.Params.Clear;
+  FDConnection.Params.Add('Database=' + DatabasePath);
+  FDConnection.Params.Add('LockingMode=Normal');
+  FDConnection.Params.Add('Synchronous=Normal');
+  FDConnection.Params.Add('JournalMode=WAL');
+
+  // Create database file if it doesn't exist
+  if not FileExists(DatabasePath) then
+    CreateLocalDatabase;
+end;
+
+function TDMDatabase.Connect: Boolean;
+var
+  Server, Database, Username, Password: string;
+  Port: Integer;
+  UseWindowsAuth: Boolean;
+begin
+  Result := False;
+
+  try
+    // Check if already connected
+    if FDConnection.Connected then
+    begin
+      Result := True;
+      Exit;
+    end;
+
+    // Setup connection based on database type
+    case FDatabaseType of
+      dtSQLServer:
+      begin
+        Server := GetConfigValue('Database', 'Server', 'localhost');
+        Database := GetConfigValue('Database', 'Database', 'InventorySales');
+        Username := GetConfigValue('Database', 'Username', 'sa');
+        Password := GetConfigValue('Database', 'Password', '');
+        UseWindowsAuth := StrToBoolDef(GetConfigValue('Database', 'WindowsAuth', 'False'), False);
+        SetupSQLServerConnection(Server, Database, Username, Password, UseWindowsAuth);
+      end;
+
+      dtMySQL:
+      begin
+        Server := GetConfigValue('Database', 'Server', 'localhost');
+        Database := GetConfigValue('Database', 'Database', 'inventory_sales');
+        Username := GetConfigValue('Database', 'Username', 'root');
+        Password := GetConfigValue('Database', 'Password', '');
+        Port := StrToIntDef(GetConfigValue('Database', 'Port', '3306'), 3306);
+        SetupMySQLConnection(Server, Database, Username, Password, Port);
+      end;
+
+      dtPostgreSQL:
+      begin
+        Server := GetConfigValue('Database', 'Server', 'localhost');
+        Database := GetConfigValue('Database', 'Database', 'inventory_sales');
+        Username := GetConfigValue('Database', 'Username', 'postgres');
+        Password := GetConfigValue('Database', 'Password', '');
+        Port := StrToIntDef(GetConfigValue('Database', 'Port', '5432'), 5432);
+        SetupPostgreSQLConnection(Server, Database, Username, Password, Port);
+      end;
+
+      dtOracle:
+      begin
+        Server := GetConfigValue('Database', 'Server', 'localhost:1521');
+        Database := GetConfigValue('Database', 'Database', 'ORCL');
+        Username := GetConfigValue('Database', 'Username', 'system');
+        Password := GetConfigValue('Database', 'Password', '');
+        SetupOracleConnection(Server, Database, Username, Password);
+      end;
+
+      dtSQLite:
+      begin
+        Database := GetConfigValue('Database', 'Database', FLocalDBPath);
+        SetupSQLiteConnection(Database);
+      end;
+    end;
+
+    // Try to connect
+    FDConnection.Connected := True;
+    FIsConnected := True;
+    Result := True;
+
+  except
+    on E: Exception do
+    begin
+      FIsConnected := False;
+
+      {$IFDEF MOBILE}
+      // On mobile, switch to offline mode if connection fails
+      SwitchToOfflineMode;
+      Result := True; // Return true as offline mode is available
+      {$ELSE}
+      ShowMessage('Database connection failed: ' + E.Message);
+      Result := False;
+      {$ENDIF}
+    end;
+  end;
+end;
+
+procedure TDMDatabase.Disconnect;
+begin
+  try
+    if FDConnection.Connected then
+      FDConnection.Connected := False;
+    FIsConnected := False;
+  except
+    on E: Exception do
+      ShowMessage('Error disconnecting: ' + E.Message);
+  end;
+end;
+
+function TDMDatabase.IsConnected: Boolean;
+begin
+  Result := FIsConnected and FDConnection.Connected;
+end;
+
+function TDMDatabase.ExecuteSQL(const SQL: string): Boolean;
+begin
+  Result := False;
+  try
+    FDConnection.ExecSQL(SQL);
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Error executing SQL: ' + E.Message);
+  end;
+end;
+
+function TDMDatabase.ExecuteQuery(const SQL: string; Query: TFDQuery): Boolean;
+begin
+  Result := False;
+  try
+    Query.Close;
+    Query.SQL.Text := SQL;
+    Query.Open;
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage('Error executing query: ' + E.Message);
+  end;
+end;
+
+function TDMDatabase.GetLastInsertID: Int64;
+begin
+  Result := -1;
+  try
+    case FDatabaseType of
+      dtSQLServer:
+        Result := FDConnection.GetLastAutoGenValue('');
+      dtMySQL:
+        Result := FDConnection.GetLastAutoGenValue('');
+      dtPostgreSQL:
+        Result := FDConnection.GetLastAutoGenValue('');
+      dtOracle:
+        Result := FDConnection.GetLastAutoGenValue('');
+      dtSQLite:
+        Result := FDConnection.GetLastAutoGenValue('');
+    end;
+  except
+    Result := -1;
+  end;
+end;
+
+procedure TDMDatabase.BeginTrans;
+begin
+  if not FDTransaction.Active then
+    FDTransaction.StartTransaction;
+end;
+
+procedure TDMDatabase.CommitTrans;
+begin
+  if FDTransaction.Active then
+    FDTransaction.Commit;
+end;
+
+procedure TDMDatabase.RollbackTrans;
+begin
+  if FDTransaction.Active then
+    FDTransaction.Rollback;
+end;
+
+function TDMDatabase.TestConnection: Boolean;
+begin
+  Result := False;
+  try
+    if not FDConnection.Connected then
+      FDConnection.Connected := True;
+    Result := FDConnection.Connected;
+  except
+    Result := False;
+  end;
+end;
+
+procedure TDMDatabase.SwitchToOfflineMode;
+begin
+  try
+    if FDConnection.Connected then
+      Disconnect;
+
+    FDatabaseType := dtSQLite;
+    SetupSQLiteConnection(FLocalDBPath);
+    FDConnection.Connected := True;
+    FIsOfflineMode := True;
+    FIsConnected := True;
+  except
+    on E: Exception do
+      ShowMessage('Error switching to offline mode: ' + E.Message);
+  end;
+end;
+
+procedure TDMDatabase.SwitchToOnlineMode;
+begin
+  try
+    if FDConnection.Connected then
+      Disconnect;
+
+    FIsOfflineMode := False;
+    LoadConfiguration;
+    Connect;
+  except
+    on E: Exception do
+      ShowMessage('Error switching to online mode: ' + E.Message);
+  end;
+end;
+
+procedure TDMDatabase.CreateLocalDatabase;
+var
+  LocalConn: TFDConnection;
+begin
+  try
+    // Ensure directory exists
+    ForceDirectories(ExtractFilePath(FLocalDBPath));
+
+    LocalConn := TFDConnection.Create(nil);
+    try
+      LocalConn.DriverName := 'SQLite';
+      LocalConn.Params.Add('Database=' + FLocalDBPath);
+      LocalConn.Params.Add('LockingMode=Normal');
+      LocalConn.Connected := True;
+
+      // Create simplified schema for offline use
+      LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Products (' +
+        'ProductID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'ProductCode TEXT NOT NULL UNIQUE, ' +
+        'ProductName TEXT NOT NULL, ' +
+        'Description TEXT, ' +
+        'CategoryID INTEGER, ' +
+        'UnitPrice REAL NOT NULL, ' +
+        'Quantity INTEGER NOT NULL DEFAULT 0, ' +
+        'IsActive INTEGER DEFAULT 1, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)');
+
+      LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Sales (' +
+        'SaleID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'SaleNumber TEXT NOT NULL UNIQUE, ' +
+        'SaleDate DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'EmployeeID INTEGER, ' +
+        'TotalAmount REAL NOT NULL, ' +
+        'IsSynced INTEGER DEFAULT 0)');
+
+      LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS SaleItems (' +
+        'SaleItemID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'SaleID INTEGER NOT NULL, ' +
+        'ProductID INTEGER NOT NULL, ' +
+        'Quantity INTEGER NOT NULL, ' +
+        'UnitPrice REAL NOT NULL, ' +
+        'LineTotal REAL NOT NULL)');
+
+      LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS SyncLog (' +
+        'SyncID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'TableName TEXT NOT NULL, ' +
+        'RecordID INTEGER NOT NULL, ' +
+        'Operation TEXT NOT NULL, ' +
+        'SyncStatus TEXT DEFAULT ''Pending'', ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)');
+
+      LocalConn.Connected := False;
+    finally
+      LocalConn.Free;
+    end;
+  except
+    on E: Exception do
+      ShowMessage('Error creating local database: ' + E.Message);
+  end;
+end;
+
+end.
