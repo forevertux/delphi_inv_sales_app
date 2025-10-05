@@ -95,15 +95,21 @@ uses
 
 procedure TDMDatabase.DataModuleCreate(Sender: TObject);
 begin
+  {$IFDEF MOBILE}
   FConfigFile := TPath.Combine(TPath.GetDocumentsPath, 'InventorySales.ini');
+  FLocalDBPath := TPath.Combine(TPath.GetDocumentsPath, 'inventory_local.db');
+  {$ELSE}
+  // On desktop, look for INI file in executable directory first, then Documents
+  FConfigFile := TPath.Combine(ExtractFilePath(ParamStr(0)), 'InventorySales.ini');
+  if not FileExists(FConfigFile) then
+    FConfigFile := TPath.Combine(TPath.GetDocumentsPath, 'InventorySales.ini');
+  FLocalDBPath := TPath.Combine(ExtractFilePath(ParamStr(0)), 'data\inventory_local.db');
+  {$ENDIF}
+
   FIsConnected := False;
   FIsOfflineMode := False;
 
-  {$IFDEF MOBILE}
-  FLocalDBPath := TPath.Combine(TPath.GetDocumentsPath, 'inventory_local.db');
-  {$ELSE}
-  FLocalDBPath := TPath.Combine(ExtractFilePath(ParamStr(0)), 'data\inventory_local.db');
-  {$ENDIF}
+  ShowMessage('Config file: ' + FConfigFile + #13#10 + 'Exists: ' + BoolToStr(FileExists(FConfigFile), True));
 
   LoadConfiguration;
 end;
