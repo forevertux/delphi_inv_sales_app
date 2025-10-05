@@ -31,7 +31,7 @@ type
   end;
 
 var
-  SalesService: TSalesService;
+  GSalesService: TSalesService;
 
 implementation
 
@@ -245,7 +245,7 @@ begin
     end;
 
     // Check stock availability
-    if not ProductService.CheckStock(Item.ProductID, Item.Quantity) then
+    if not GProductService.CheckStock(Item.ProductID, Item.Quantity) then
     begin
       ShowMessage(Format('Insufficient stock for product: %s', [Item.ProductName]));
       Exit;
@@ -758,9 +758,9 @@ begin
 end;
 
 initialization
-  SalesService := TSalesService.Create;
+  GSalesService := TSalesService.Create;
 
 finalization
-  SalesService.Free;
+  GSalesService.Free;
 
 end.

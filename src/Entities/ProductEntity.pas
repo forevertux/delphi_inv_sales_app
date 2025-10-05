@@ -105,7 +105,7 @@ end;
 
 function TProduct.GetStockStatus: string;
 begin
-  Result := GetStockStatus(FQuantity, FMinStockLevel, FMaxStockLevel);
+  Result := Constants.GetStockStatus(FQuantity, FMinStockLevel, FMaxStockLevel);
 end;
 
 function TProduct.IsLowStock: Boolean;
