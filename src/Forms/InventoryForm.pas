@@ -53,7 +53,7 @@ implementation
 {$R *.fmx}
 
 uses
-  ProductService, AuthService, FMX.DialogService, DatabaseModule;
+  ProductService, AuthService, FMX.DialogService, DatabaseModule, FireDAC.Comp.Client;
 
 { TfrmInventory }
 

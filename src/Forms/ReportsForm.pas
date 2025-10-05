@@ -50,7 +50,7 @@ implementation
 {$R *.fmx}
 
 uses
-  ReportService, AuthService, DatabaseModule, System.IOUtils,
+  ReportService, AuthService, DatabaseModule, FireDAC.Comp.Client, System.IOUtils,
   FMX.DialogService;
 
 { TfrmReports }
