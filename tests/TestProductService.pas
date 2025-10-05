@@ -55,7 +55,7 @@ begin
     DMDatabase.Connect;
 
   // Login as admin for testing
-  AuthService.Login('admin', 'Admin@123');
+  GAuthService.Login('admin', 'Admin@123');
 
   FProductService := TProductService.Create;
   FTestProductID := 0;
@@ -68,7 +68,7 @@ begin
     FProductService.DeleteProduct(FTestProductID);
 
   FProductService.Free;
-  AuthService.Logout;
+  GAuthService.Logout;
 end;
 
 procedure TTestProductService.TestCreateProduct;
