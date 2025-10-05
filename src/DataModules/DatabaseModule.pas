@@ -526,7 +526,11 @@ begin
     // For SQLite, execute the schema file
     if FDatabaseType = dtSQLite then
     begin
+      // Try multiple locations for the schema file
       SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), 'database\schema_sqlite.sql');
+      if not TFile.Exists(SchemaFile) then
+        SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), '..\..', 'database\schema_sqlite.sql');
+
       if TFile.Exists(SchemaFile) then
       begin
         SchemaSQL := TStringList.Create;
