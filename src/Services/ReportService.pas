@@ -35,7 +35,7 @@ type
   end;
 
 var
-  ReportService: TReportService;
+  GReportService: TReportService;
 
 implementation
 
