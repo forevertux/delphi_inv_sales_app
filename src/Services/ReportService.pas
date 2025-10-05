@@ -53,7 +53,7 @@ function TReportService.CheckPermissions: Boolean;
 begin
   Result := False;
 
-  if not Assigned(AuthService) then
+  if not Assigned(GAuthService) then
   begin
     ShowMessage('Authentication service not available');
     Exit;
