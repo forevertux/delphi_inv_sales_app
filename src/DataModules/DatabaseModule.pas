@@ -257,14 +257,17 @@ begin
 
   ShowMessage('SQLite VendorLib set to: ' + FDPhysSQLiteDriverLink.VendorLib);
 
-  FDConnection.DriverName := 'SQLite';
+  // Clear and reconfigure connection
+  FDConnection.Close;
+  FDConnection.ConnectionDefName := '';
   FDConnection.Params.Clear;
+
+  // Set DriverID instead of DriverName
+  FDConnection.Params.Add('DriverID=SQLite');
   FDConnection.Params.Add('Database=' + FullPath);
   FDConnection.Params.Add('LockingMode=Normal');
   FDConnection.Params.Add('Synchronous=Normal');
   FDConnection.Params.Add('JournalMode=WAL');
-
-  // OpenMode=CreateUTF8 will create the database file if it doesn't exist
   FDConnection.Params.Add('OpenMode=CreateUTF8');
 end;
 
