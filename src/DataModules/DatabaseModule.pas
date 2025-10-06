@@ -9,7 +9,7 @@ uses
   FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, System.IniFiles,
   FireDAC.Phys.SQLite, FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs,
-  FireDAC.Comp.Script
+  FireDAC.Comp.Script, FireDAC.Comp.ScriptCommands
   {$IFDEF USE_MSSQL}
   , FireDAC.Phys.MSSQLDef, FireDAC.Phys.MSSQL
   {$ENDIF}
