@@ -240,6 +240,9 @@ begin
   // Show debug info
   ShowMessage('Database will be created at: ' + FullPath + #13#10 + 'Directory exists: ' + BoolToStr(TDirectory.Exists(DBDir), True));
 
+  // Configure SQLite driver link
+  FDPhysSQLiteDriverLink.VendorLib := 'sqlite3.dll';
+
   FDConnection.DriverName := 'SQLite';
   FDConnection.Params.Clear;
   FDConnection.Params.Add('Database=' + FullPath);
