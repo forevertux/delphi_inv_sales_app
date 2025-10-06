@@ -240,8 +240,13 @@ begin
   // Show debug info
   ShowMessage('Database will be created at: ' + FullPath + #13#10 + 'Directory exists: ' + BoolToStr(TDirectory.Exists(DBDir), True));
 
-  // Configure SQLite driver link
-  FDPhysSQLiteDriverLink.VendorLib := 'sqlite3.dll';
+  // Configure SQLite driver link - try multiple locations
+  if FileExists(TPath.Combine(ExtractFilePath(ParamStr(0)), 'sqlite3.dll')) then
+    FDPhysSQLiteDriverLink.VendorLib := TPath.Combine(ExtractFilePath(ParamStr(0)), 'sqlite3.dll')
+  else if FileExists('C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\sqlite3.dll') then
+    FDPhysSQLiteDriverLink.VendorLib := 'C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\sqlite3.dll'
+  else
+    FDPhysSQLiteDriverLink.VendorLib := 'sqlite3.dll'; // Try system PATH
 
   FDConnection.DriverName := 'SQLite';
   FDConnection.Params.Clear;
