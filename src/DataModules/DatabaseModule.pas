@@ -311,15 +311,20 @@ begin
       dtSQLite:
       begin
         Database := GetConfigValue('Database', 'Database', FLocalDBPath);
+        ShowMessage('Setting up SQLite with database path: ' + Database);
         SetupSQLiteConnection(Database);
       end;
     end;
 
     // Try to connect
+    ShowMessage('About to connect to database...');
     FDConnection.Connected := True;
-    
+    ShowMessage('Connected successfully!');
+
     // Initialize database schema if needed
+    ShowMessage('About to initialize database schema...');
     InitializeDatabase;
+    ShowMessage('Database initialization complete!');
     FIsConnected := True;
     Result := True;
 
