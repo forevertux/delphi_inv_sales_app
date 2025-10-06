@@ -156,5 +156,6 @@ INSERT OR IGNORE INTO Categories (CategoryID, CategoryCode, CategoryName)
 VALUES (1, 'GEN', 'General');
 
 -- Insert default admin user (password: Admin@123)
+-- SHA256 hash of 'Admin@123'
 INSERT OR IGNORE INTO Users (UserID, Username, PasswordHash, FullName, RoleID, BranchID)
-VALUES (1, 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'System Administrator', 1, 1);
+VALUES (1, 'admin', '6B3A55E0261B0304143F805A24924D0C1C44524821305F31D9277843B8A10F4E', 'System Administrator', 1, 1);
