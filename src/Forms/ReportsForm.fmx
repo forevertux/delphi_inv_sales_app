@@ -1,0 +1,199 @@
+object frmReports: TfrmReports
+  Left = 0
+  Top = 0
+  Caption = 'Reports'
+  ClientHeight = 600
+  ClientWidth = 900
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object LayoutTop: TLayout
+    Align = Top
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 10.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 180.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblTitle: TLabel
+      Align = Top
+      StyledSettings = [Family]
+      Margins.Bottom = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Reports'
+      TabOrder = 0
+    end
+    object lblReportType: TLabel
+      Align = Top
+      StyledSettings = [Family, Style]
+      Margins.Top = 50.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 50.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 20.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 14.000000000000000000
+      Text = 'Report Type:'
+      TabOrder = 1
+    end
+    object cmbReportType: TComboBox
+      Align = Top
+      Margins.Top = 75.000000000000000000
+      Margins.Bottom = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 75.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      OnChange = cmbReportTypeChange
+    end
+    object lblDateRange: TLabel
+      Align = Top
+      StyledSettings = [Family, Style]
+      Margins.Top = 125.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 125.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 20.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 14.000000000000000000
+      Text = 'Date Range:'
+      TabOrder = 3
+    end
+    object dateStart: TDateEdit
+      Align = Left
+      Date = 45649.000000000000000000
+      Margins.Top = 150.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 150.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+    end
+    object dateEnd: TDateEdit
+      Align = Left
+      Date = 45649.000000000000000000
+      Margins.Top = 150.000000000000000000
+      Margins.Right = 20.000000000000000000
+      Position.X = 220.000000000000000000
+      Position.Y = 150.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+    end
+    object lblBranch: TLabel
+      Align = Left
+      StyledSettings = [Family, Style]
+      Margins.Top = 150.000000000000000000
+      Margins.Right = 10.000000000000000000
+      Position.X = 440.000000000000000000
+      Position.Y = 150.000000000000000000
+      Size.Width = 60.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 14.000000000000000000
+      TextSettings.VertAlign = Center
+      Text = 'Branch:'
+      TabOrder = 6
+    end
+    object cmbBranch: TComboBox
+      Align = Left
+      Margins.Top = 150.000000000000000000
+      Position.X = 510.000000000000000000
+      Position.Y = 150.000000000000000000
+      Size.Width = 200.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 7
+    end
+    object btnGenerate: TButton
+      Align = Left
+      Margins.Top = 150.000000000000000000
+      Margins.Left = 730.000000000000000000
+      Position.X = 730.000000000000000000
+      Position.Y = 150.000000000000000000
+      Size.Width = 150.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 8
+      Text = 'Generate Report'
+      TextSettings.Trimming = None
+      OnClick = btnGenerateClick
+    end
+  end
+  object LayoutContent: TLayout
+    Align = Client
+    Padding.Left = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 360.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object GridReport: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 880.000000000000000000
+      Size.Height = 360.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      RowCount = 0
+      Viewport.Width = 876.000000000000000000
+      Viewport.Height = 335.000000000000000000
+    end
+  end
+  object LayoutButtons: TLayout
+    Align = Bottom
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 10.000000000000000000
+    Position.Y = 540.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 60.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object btnExportCSV: TButton
+      Align = Left
+      Margins.Right = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 150.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Export to CSV'
+      TextSettings.Trimming = None
+      OnClick = btnExportCSVClick
+    end
+    object btnExportPDF: TButton
+      Align = Left
+      Position.X = 170.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 150.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Export to PDF'
+      TextSettings.Trimming = None
+      OnClick = btnExportPDFClick
+    end
+  end
+end

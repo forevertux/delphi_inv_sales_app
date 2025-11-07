@@ -1,0 +1,383 @@
+object frmMain: TfrmMain
+  Left = 0
+  Top = 0
+  Caption = 'Sales & Inventory - Main'
+  ClientHeight = 700
+  ClientWidth = 1000
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnShow = FormShow
+  OnClose = FormClose
+  DesignerMasterStyle = 0
+  object LayoutTop: TLayout
+    Align = Top
+    Size.Width = 1000.000000000000000000
+    Size.Height = 60.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object RectTopBar: TRectangle
+      Align = Client
+      Fill.Color = xFF1976D2
+      Size.Width = 1000.000000000000000000
+      Size.Height = 60.000000000000000000
+      Size.PlatformDefault = False
+      Stroke.Kind = None
+      object lblUserInfo: TLabel
+        Align = Left
+        StyledSettings = [Family, Style]
+        Margins.Left = 20.000000000000000000
+        Margins.Top = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Position.X = 20.000000000000000000
+        Position.Y = 10.000000000000000000
+        Size.Width = 300.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Size = 16.000000000000000000
+        TextSettings.FontColor = claWhite
+        TextSettings.VertAlign = Center
+        Text = 'User: '
+        TabOrder = 0
+      end
+      object lblSyncStatus: TLabel
+        Align = Client
+        StyledSettings = [Family, Style]
+        Margins.Top = 10.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Size.Width = 490.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TextSettings.Font.Size = 14.000000000000000000
+        TextSettings.FontColor = claWhite
+        TextSettings.HorzAlign = Center
+        TextSettings.VertAlign = Center
+        Text = 'Last Sync: --:--'
+        TabOrder = 1
+      end
+      object btnLogout: TButton
+        Align = Right
+        Margins.Top = 10.000000000000000000
+        Margins.Right = 20.000000000000000000
+        Margins.Bottom = 10.000000000000000000
+        Position.X = 810.000000000000000000
+        Position.Y = 10.000000000000000000
+        Size.Width = 170.000000000000000000
+        Size.Height = 40.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        Text = 'Logout'
+        TextSettings.Trimming = None
+        OnClick = btnLogoutClick
+      end
+    end
+  end
+  object LayoutContent: TLayout
+    Align = Client
+    Size.Width = 1000.000000000000000000
+    Size.Height = 640.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object TabControl1: TTabControl
+      Align = Client
+      Size.Width = 1000.000000000000000000
+      Size.Height = 640.000000000000000000
+      Size.PlatformDefault = False
+      TabIndex = 0
+      TabOrder = 0
+      TabPosition = Top
+      OnChange = TabControl1Change
+      Sizes = (
+        1000s
+        611s
+        1000s
+        611s
+        1000s
+        611s
+        1000s
+        611s
+        1000s
+        611s)
+      object TabDashboard: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = True
+        Size.Width = 200.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Dashboard'
+        ExplicitSize.cx = 50.000000000000000000
+        ExplicitSize.cy = 50.000000000000000000
+        object LayoutDashboard: TLayout
+          Align = Client
+          Padding.Left = 20.000000000000000000
+          Padding.Top = 20.000000000000000000
+          Padding.Right = 20.000000000000000000
+          Padding.Bottom = 20.000000000000000000
+          Size.Width = 1000.000000000000000000
+          Size.Height = 611.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          object RectTotalSales: TRectangle
+            Align = Top
+            Fill.Color = xFF4CAF50
+            Margins.Bottom = 15.000000000000000000
+            Position.X = 20.000000000000000000
+            Position.Y = 20.000000000000000000
+            Size.Width = 960.000000000000000000
+            Size.Height = 100.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF388E3C
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+            object lblTotalSalesTitle: TLabel
+              Align = Top
+              StyledSettings = [Family]
+              Margins.Left = 20.000000000000000000
+              Margins.Top = 15.000000000000000000
+              Margins.Right = 20.000000000000000000
+              Position.X = 20.000000000000000000
+              Position.Y = 15.000000000000000000
+              Size.Width = 920.000000000000000000
+              Size.Height = 25.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 18.000000000000000000
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              Text = 'Total Sales (Today)'
+              TabOrder = 0
+            end
+            object lblTotalSalesValue: TLabel
+              Align = Client
+              StyledSettings = [Family, Style]
+              Margins.Left = 20.000000000000000000
+              Margins.Top = 40.000000000000000000
+              Margins.Right = 20.000000000000000000
+              Margins.Bottom = 15.000000000000000000
+              Size.Width = 920.000000000000000000
+              Size.Height = 45.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 28.000000000000000000
+              TextSettings.FontColor = claWhite
+              Text = '0 transactions'
+              TabOrder = 1
+            end
+          end
+          object RectTodaySales: TRectangle
+            Align = Top
+            Fill.Color = xFF2196F3
+            Margins.Bottom = 15.000000000000000000
+            Position.X = 20.000000000000000000
+            Position.Y = 135.000000000000000000
+            Size.Width = 960.000000000000000000
+            Size.Height = 100.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFF1976D2
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+            object lblTodaySalesTitle: TLabel
+              Align = Top
+              StyledSettings = [Family]
+              Margins.Left = 20.000000000000000000
+              Margins.Top = 15.000000000000000000
+              Margins.Right = 20.000000000000000000
+              Position.X = 20.000000000000000000
+              Position.Y = 15.000000000000000000
+              Size.Width = 920.000000000000000000
+              Size.Height = 25.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 18.000000000000000000
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              Text = 'Today'#39's Revenue'
+              TabOrder = 0
+            end
+            object lblTodaySalesValue: TLabel
+              Align = Client
+              StyledSettings = [Family, Style]
+              Margins.Left = 20.000000000000000000
+              Margins.Top = 40.000000000000000000
+              Margins.Right = 20.000000000000000000
+              Margins.Bottom = 15.000000000000000000
+              Size.Width = 920.000000000000000000
+              Size.Height = 45.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 28.000000000000000000
+              TextSettings.FontColor = claWhite
+              Text = '$0.00'
+              TabOrder = 1
+            end
+          end
+          object RectLowStock: TRectangle
+            Align = Top
+            Fill.Color = xFFFF9800
+            Margins.Bottom = 15.000000000000000000
+            Position.X = 20.000000000000000000
+            Position.Y = 250.000000000000000000
+            Size.Width = 960.000000000000000000
+            Size.Height = 100.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Color = xFFF57C00
+            XRadius = 8.000000000000000000
+            YRadius = 8.000000000000000000
+            object lblLowStockTitle: TLabel
+              Align = Top
+              StyledSettings = [Family]
+              Margins.Left = 20.000000000000000000
+              Margins.Top = 15.000000000000000000
+              Margins.Right = 20.000000000000000000
+              Position.X = 20.000000000000000000
+              Position.Y = 15.000000000000000000
+              Size.Width = 920.000000000000000000
+              Size.Height = 25.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 18.000000000000000000
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              Text = 'Low Stock Alert'
+              TabOrder = 0
+            end
+            object lblLowStockValue: TLabel
+              Align = Client
+              StyledSettings = [Family, Style]
+              Margins.Left = 20.000000000000000000
+              Margins.Top = 40.000000000000000000
+              Margins.Right = 20.000000000000000000
+              Margins.Bottom = 15.000000000000000000
+              Size.Width = 920.000000000000000000
+              Size.Height = 45.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 28.000000000000000000
+              TextSettings.FontColor = claWhite
+              Text = '0 items'
+              TabOrder = 1
+            end
+          end
+          object btnRefreshDashboard: TButton
+            Align = Top
+            Margins.Left = 20.000000000000000000
+            Margins.Top = 380.000000000000000000
+            Margins.Right = 20.000000000000000000
+            Margins.Bottom = 10.000000000000000000
+            Position.X = 40.000000000000000000
+            Position.Y = 380.000000000000000000
+            Size.Width = 920.000000000000000000
+            Size.Height = 45.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Text = 'Refresh Dashboard'
+            TextSettings.Trimming = None
+            OnClick = btnRefreshDashboardClick
+          end
+          object btnOpenInventory: TButton
+            Align = Top
+            Margins.Left = 20.000000000000000000
+            Margins.Top = 445.000000000000000000
+            Margins.Right = 20.000000000000000000
+            Margins.Bottom = 10.000000000000000000
+            Position.X = 40.000000000000000000
+            Position.Y = 445.000000000000000000
+            Size.Width = 920.000000000000000000
+            Size.Height = 45.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 2
+            Text = 'Go to Inventory'
+            TextSettings.Trimming = None
+            OnClick = btnOpenInventoryClick
+          end
+          object btnOpenSales: TButton
+            Align = Top
+            Margins.Left = 20.000000000000000000
+            Margins.Top = 510.000000000000000000
+            Margins.Right = 20.000000000000000000
+            Margins.Bottom = 10.000000000000000000
+            Position.X = 40.000000000000000000
+            Position.Y = 510.000000000000000000
+            Size.Width = 920.000000000000000000
+            Size.Height = 45.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 3
+            Text = 'Go to Sales'
+            TextSettings.Trimming = None
+            OnClick = btnOpenSalesClick
+          end
+          object btnOpenReports: TButton
+            Align = Top
+            Margins.Left = 20.000000000000000000
+            Margins.Top = 575.000000000000000000
+            Margins.Right = 20.000000000000000000
+            Position.X = 40.000000000000000000
+            Position.Y = 575.000000000000000000
+            Size.Width = 920.000000000000000000
+            Size.Height = 45.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 4
+            Text = 'Go to Reports'
+            TextSettings.Trimming = None
+            OnClick = btnOpenReportsClick
+          end
+        end
+      end
+      object TabInventory: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 200.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Inventory'
+        ExplicitSize.cx = 50.000000000000000000
+        ExplicitSize.cy = 50.000000000000000000
+      end
+      object TabSales: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 200.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Sales'
+        ExplicitSize.cx = 50.000000000000000000
+        ExplicitSize.cy = 50.000000000000000000
+      end
+      object TabReports: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 200.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Reports'
+        ExplicitSize.cx = 50.000000000000000000
+        ExplicitSize.cy = 50.000000000000000000
+      end
+      object TabUsers: TTabItem
+        CustomIcon = <
+          item
+          end>
+        IsSelected = False
+        Size.Width = 200.000000000000000000
+        Size.Height = 29.000000000000000000
+        Size.PlatformDefault = False
+        StyleLookup = ''
+        TabOrder = 0
+        Text = 'Users'
+        ExplicitSize.cx = 50.000000000000000000
+        ExplicitSize.cy = 50.000000000000000000
+      end
+    end
+  end
+end

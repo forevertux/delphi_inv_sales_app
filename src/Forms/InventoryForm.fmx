@@ -1,0 +1,153 @@
+object frmInventory: TfrmInventory
+  Left = 0
+  Top = 0
+  Caption = 'Inventory Management'
+  ClientHeight = 600
+  ClientWidth = 900
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  OnShow = FormShow
+  OnDestroy = FormDestroy
+  DesignerMasterStyle = 0
+  object LayoutTop: TLayout
+    Align = Top
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 10.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 120.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblTitle: TLabel
+      Align = Top
+      StyledSettings = [Family]
+      Margins.Bottom = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'Product Inventory'
+      TabOrder = 0
+    end
+    object LayoutSearch: TLayout
+      Align = Top
+      Margins.Top = 50.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 50.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 50.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      object edtSearch: TEdit
+        Touch.InteractiveGestures = [LongTap, DoubleTap]
+        Align = Left
+        TabOrder = 0
+        Margins.Right = 10.000000000000000000
+        Size.Width = 300.000000000000000000
+        Size.Height = 50.000000000000000000
+        Size.PlatformDefault = False
+        TextPrompt = 'Search products...'
+      end
+      object btnSearch: TButton
+        Align = Left
+        Margins.Right = 15.000000000000000000
+        Position.X = 310.000000000000000000
+        Size.Width = 100.000000000000000000
+        Size.Height = 50.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        Text = 'Search'
+        TextSettings.Trimming = None
+        OnClick = btnSearchClick
+      end
+      object cmbCategory: TComboBox
+        Align = Left
+        Margins.Right = 10.000000000000000000
+        Position.X = 425.000000000000000000
+        Size.Width = 200.000000000000000000
+        Size.Height = 50.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        OnChange = cmbCategoryChange
+      end
+    end
+  end
+  object LayoutButtons: TLayout
+    Align = Bottom
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 10.000000000000000000
+    Position.Y = 540.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 60.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object btnAdd: TButton
+      Align = Left
+      Margins.Right = 10.000000000000000000
+      Position.X = 10.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 120.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Add Product'
+      TextSettings.Trimming = None
+      OnClick = btnAddClick
+    end
+    object btnEdit: TButton
+      Align = Left
+      Margins.Right = 10.000000000000000000
+      Position.X = 140.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 120.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Edit Product'
+      TextSettings.Trimming = None
+      OnClick = btnEditClick
+    end
+    object btnDelete: TButton
+      Align = Left
+      Position.X = 270.000000000000000000
+      Position.Y = 10.000000000000000000
+      Size.Width = 120.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Delete'
+      TextSettings.Trimming = None
+      OnClick = btnDeleteClick
+    end
+  end
+  object LayoutContent: TLayout
+    Align = Client
+    Padding.Left = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 420.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object GridProducts: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 880.000000000000000000
+      Size.Height = 420.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      RowCount = 0
+      Viewport.Width = 876.000000000000000000
+      Viewport.Height = 395.000000000000000000
+      OnDblClick = GridProductsDblClick
+    end
+  end
+end
