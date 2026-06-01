@@ -1,457 +1,242 @@
 # Inventory & Sales Management System
 
-A cross-platform Inventory and Sales Management application built with Delphi FMX that enables multi-branch companies to manage products, track sales, generate reports, and synchronize data in real-time.
+Cross-platform **Delphi FMX** desktop app for multi-branch inventory, sales, reporting, and user administration. The recommended development setup uses **SQLite** (no database server required). **Win32** is the active build target in the project.
+
+Repository: [github.com/forevertux/delphi_inv_sales_app](https://github.com/forevertux/delphi_inv_sales_app)
+
+## Screenshots
+
+### Login
+
+Sign-in screen (`admin` / `Admin@123` for full access).
+
+![Login screen](invdel_login.png)
+
+### Dashboard
+
+Summary cards and tab navigation (Inventory, Sales, Reports, Users).
+
+![Dashboard](invdel_dashboard.png)
+
+### Inventory
+
+Product list with search, category filter, and stock columns.
+
+![Inventory](invdel_inventory.png)
+
+### Sales
+
+Point-of-sale flow: product search, cart, totals, and payment.
+
+![Sales](invdel_sales.png)
+
+### Reports
+
+Report type, date range, grid results, and Generate Report.
+
+![Reports](invdel_reports.png)
+
+### Users (admin)
+
+User management: list, Add/Edit, Deactivate, Reset Password.
+
+![User management](invdel_users.png)
 
 ## Features
 
-### ✅ Core Modules Implemented
+- **Authentication** — SHA-256 password hashing, roles (Admin, Manager, Employee), session per login
+- **Dashboard** — Today's sales count, revenue, low-stock count; quick navigation; **Load Demo Data** (admin)
+- **Inventory** — Product CRUD, categories, stock levels, search and filter
+- **Sales** — Cart, discounts/tax, payment methods, automatic stock updates
+- **Reports** — Sales, inventory, top products, charts; CSV export
+- **Users** — Admin-only user management (add, edit, deactivate, reset password)
+- **Offline / sync** — SQLite local DB; sync service and `SyncLog` for future server integration
 
-#### 1. User Authentication & Authorization (Story 4)
-- Multi-user authentication with password hashing (SHA256)
-- Role-based access control (Admin, Manager, Employee)
-- Session management for mobile and desktop
-- Password change and reset functionality
-- User management (CRUD operations)
+Main modules are implemented as **TFrame** hosts inside `MainForm` tabs (`Inventory`, `Sales`, `Reports`, `Users`).
 
-#### 2. Inventory Management (Story 1)
-- Complete CRUD operations for products
-- Product categories and branches support
-- Stock level tracking (min/max levels)
-- Low stock and out-of-stock alerts
-- Barcode and SKU support
-- Profit margin calculations
-- Product search and filtering
+## Technology
 
-#### 3. Sales Management (Story 2)
-- Record sales transactions with multiple items
-- Automatic inventory updates after sales
-- Customer information tracking
-- Multiple payment methods (Cash, Card, Mobile, Bank)
-- Discount and tax calculations
-- Sale number auto-generation
-- Transaction history and reporting
+| Item | Details |
+|------|---------|
+| IDE | RAD Studio 12 Athens (Delphi FMX), **Win32** enabled in `.dproj` |
+| UI | FireMonkey (FMX) |
+| Data | FireDAC |
+| Default DB | **SQLite** (`data\inventory.db`) |
+| Optional DB | SQL Server, MySQL, PostgreSQL, Oracle (see `InventorySales.ini.sample`) |
 
-#### 4. Reporting & Analytics (Story 3)
-- Comprehensive sales reports with date ranges
-- Inventory status reports
-- Top-selling products analysis
-- Sales by category and employee
-- Daily and monthly sales charts
-- Profit analysis and margin reports
-- Export to CSV (PDF export ready for integration)
-
-#### 5. Offline Synchronization
-- SQLite local database for offline mode
-- Automatic sync when connection restored
-- Change tracking with SyncLog
-- Conflict resolution (server-wins strategy)
-- Device identification and tracking
-- Background sync support for mobile
-
-## Technology Stack
-
-- **Framework**: Delphi FMX (FireMonkey)
-- **Platforms**: Windows, macOS, Android, iOS
-- **Database**: SQL Server, MySQL, PostgreSQL, Oracle, SQLite
-- **Data Access**: FireDAC
-- **Testing**: DUnitX
-
-## Project Structure
-
-```
-sales_inventory/
-├── src/
-│   ├── DataModules/
-│   │   ├── DatabaseModule.pas/dfm    # FireDAC database connectivity
-│   ├── Entities/
-│   │   ├── UserEntity.pas            # User entity class
-│   │   ├── ProductEntity.pas         # Product entity class
-│   │   ├── SaleEntity.pas            # Sale & SaleItem entity classes
-│   │   ├── CategoryEntity.pas        # Category entity class
-│   │   └── BranchEntity.pas          # Branch entity class
-│   ├── Services/
-│   │   ├── AuthService.pas           # Authentication & user management
-│   │   ├── ProductService.pas        # Product CRUD operations
-│   │   ├── SalesService.pas          # Sales transaction processing
-│   │   ├── ReportService.pas         # Reporting & analytics
-│   │   └── SyncService.pas           # Offline synchronization
-│   ├── Forms/
-│   │   ├── LoginForm.pas/fmx         # Login screen
-│   │   ├── MainForm.pas/fmx          # Main dashboard
-│   │   ├── InventoryForm.pas/fmx     # Product management
-│   │   ├── SalesForm.pas/fmx         # Sales transactions
-│   │   └── ReportsForm.pas/fmx       # Reports & analytics
-│   └── Utils/
-│       ├── Constants.pas              # Application constants
-│       ├── HashUtils.pas              # Password hashing utilities
-│       ├── ValidationUtils.pas        # Input validation
-│       └── DateTimeUtils.pas          # Date/time formatting
-├── database/
-│   └── schema.sql                     # Database schema with sample data
-├── tests/
-│   ├── TestAuthService.pas            # Authentication tests
-│   └── TestProductService.pas         # Product service tests
-├── docs/
-├── InventorySales.dpr                 # Main project file
-├── InventorySales.dproj               # Project configuration
-├── InventorySales.ini.sample          # Configuration template
-└── README.md                          # This file
-```
-
-## Installation & Setup
+## Quick start (Windows + SQLite)
 
 ### Prerequisites
 
-- Delphi 10.4 Sydney or later (with FMX support)
-- One of the supported database servers:
-  - SQL Server 2014+
-  - MySQL 5.7+
-  - PostgreSQL 10+
-  - Oracle 12c+
-  - SQLite 3+
+- **RAD Studio 12 Athens** (or compatible Delphi with FMX + FireDAC SQLite)
+- **Git**
+- No database server needed for local development
 
-### Database Setup
+### 1. Clone and open
 
-1. **Create the database**:
-   ```sql
-   -- For SQL Server
-   CREATE DATABASE InventorySales;
+```bash
+git clone https://github.com/forevertux/delphi_inv_sales_app.git
+cd delphi_inv_sales_app
+```
 
-   -- For MySQL
-   CREATE DATABASE inventory_sales;
+In RAD Studio: **File → Open Project** → `InventorySales.dproj`  
+Target platform: **Win32** (Debug).
 
-   -- For PostgreSQL
-   CREATE DATABASE inventory_sales;
-   ```
+### 2. Configuration
 
-2. **Run the schema script**:
-   ```bash
-   # Navigate to database directory
-   cd database
+Create `InventorySales.ini` next to the project root (or copy from sample):
 
-   # Execute schema.sql on your database
-   # SQL Server:
-   sqlcmd -S localhost -d InventorySales -i schema.sql
+```ini
+[Database]
+Type=SQLite
+Database=data\inventory.db
 
-   # MySQL:
-   mysql -u root -p inventory_sales < schema.sql
+[Login]
+RememberMe=False
+Username=
+```
 
-   # PostgreSQL:
-   psql -U postgres -d inventory_sales -f schema.sql
-   ```
+For a full template with SQL Server / sync / security options, see `InventorySales.ini.sample`.
 
-3. **Verify installation**:
-   - Check that all tables are created: `Users`, `Products`, `Sales`, `SaleItems`, `Categories`, `Branches`, `SyncLog`
-   - Verify sample data is loaded (default users, categories, products)
+### 3. Deploy SQL scripts with the executable
 
-### Application Configuration
+After the first build, copy the `database` folder next to the EXE so schema and demo scripts are found at runtime:
 
-1. **Copy the configuration template**:
-   ```bash
-   cp InventorySales.ini.sample InventorySales.ini
-   ```
+```
+Win32\Debug\
+  InventorySales.exe
+  InventorySales.ini          ← copy here if not already present
+  database\
+    schema_sqlite.sql
+    demo_data_sqlite.sql
+  data\
+    inventory.db              ← created automatically on first run
+```
 
-2. **Edit `InventorySales.ini`**:
-   ```ini
-   [Database]
-   Type=SQLServer
-   Server=localhost
-   Database=InventorySales
-   Username=sa
-   Password=YourPassword
-   WindowsAuth=False
-   ```
+The app runs `schema_sqlite.sql` on first connect, then loads English demo data from `demo_data_sqlite.sql` when needed.
 
-3. **Configure other settings** (optional):
-   - Sync server URL
-   - Auto-sync interval
-   - Report export path
-   - Mobile offline settings
+Details: [database/DEMO_DATA.md](database/DEMO_DATA.md)
 
-### Running the Application
+### 4. Build and run
 
-1. **Open in Delphi**:
-   - Open `InventorySales.dproj` in Delphi IDE
-   - Select target platform (Win32, Win64, Android, iOS, macOS)
+1. Build (**Shift+F9**) / Run (**F9**)
+2. Log in (demo accounts below)
+3. Explore tabs: **Dashboard**, **Inventory**, **Sales**, **Reports**, **Users** (admin only)
 
-2. **Build and run**:
-   - Press F9 or click Run
-   - Login with default credentials:
-     - **Admin**: `admin` / `Admin@123`
-     - **Manager**: `manager` / `Manager@123`
-     - **Employee**: `employee` / `Employee@123`
+### Reset database
 
-## Default User Credentials
+1. Close the app  
+2. Delete `data\inventory.db` (path from `InventorySales.ini`)  
+3. Start again — schema and demo data are recreated  
 
-| Username | Password | Role | Permissions |
-|----------|----------|------|-------------|
-| admin | Admin@123 | Administrator | Full access to all modules |
-| manager | Manager@123 | Manager | Access to inventory, sales, reports |
-| employee | Employee@123 | Employee | Access to sales and inventory (read-only) |
+To reload demo products/sales only (keep schema): log in as **admin** → Dashboard → **Load Demo Data**.
 
-**⚠️ Important**: Change these default passwords in production!
+## Demo accounts
 
-## User Roles & Permissions
+| Username | Password | Role |
+|----------|----------|------|
+| admin | Admin@123 | Administrator |
+| manager | Manager@123 | Manager |
+| employee | Employee@123 | Employee |
+| employee2 | Employee@123 | Employee |
 
-### Administrator
-- Full access to all modules
-- User management (create, edit, delete users)
-- Product management (create, edit, delete products)
-- Sales processing
-- All reports access
-- System configuration
+Change these passwords before any production use.
 
-### Manager
-- Product management (create, edit)
-- Sales processing
-- Reports access (sales, inventory, analytics)
-- Cannot delete products or manage users
+## Roles
 
-### Employee
-- View products and inventory
-- Process sales transactions
-- Limited report access
-- No administrative functions
+| Role | Inventory | Sales | Reports | Users |
+|------|-----------|-------|---------|-------|
+| Admin | Full | Full | Full | Full |
+| Manager | Add/Edit | Full | Full | — |
+| Employee | View / sell | Full | Limited | — |
 
-## Usage Guide
+The **Users** tab is hidden for non-admin users.
 
-### Inventory Management
+## Project layout
 
-1. **Add New Product**:
-   - Navigate to Inventory tab
-   - Click "Add Product" button
-   - Fill in product details (code, name, price, quantity)
-   - Select category and branch
-   - Save
+```
+delphi_inv_sales_app/
+├── InventorySales.dpr / .dproj / .ini.sample
+├── database/
+│   ├── schema_sqlite.sql      # SQLite schema (default)
+│   ├── demo_data_sqlite.sql   # English demo seed
+│   ├── schema.sql             # SQL Server / generic schema
+│   └── DEMO_DATA.md
+├── src/
+│   ├── DataModules/DatabaseModule.pas
+│   ├── Entities/
+│   ├── Services/              # Auth, Product, Sales, Report, Sync
+│   └── Forms/
+│       ├── LoginForm, MainForm
+│       ├── InventoryForm, SalesForm, ReportsForm, UsersForm  (TFrame)
+│       └── ...
+├── tests/
+├── docs/
+├── invdel_*.png               # UI screenshots (this README)
+└── README.md
+```
 
-2. **Update Stock Levels**:
-   - Search or select product from grid
-   - Click "Edit" button
-   - Update quantity
-   - Save changes
+## Usage notes
 
-3. **Monitor Low Stock**:
-   - Set minimum stock levels for products
-   - System automatically flags low stock items
-   - View low stock report in Reports tab
+- **Inventory** — Search, category filter, **Add Product** / **Edit** / **Delete** (permissions apply). Product dialogs use `InputQuery` on Windows.
+- **Sales** — Products load when the tab opens; add lines, set payment method, **Process Sale**.
+- **Reports** — Pick report type and date range → **Generate Report**; export CSV where available.
+- **Users** (admin) — **Add User**, **Edit**, **Deactivate**, **Reset Password**, **Refresh**.
 
-### Sales Processing
+## Optional: SQL Server / MySQL / PostgreSQL
 
-1. **Create New Sale**:
-   - Navigate to Sales tab
-   - Search and add products to cart
-   - Enter quantity for each product
-   - Apply discounts/taxes if needed
-   - Enter customer information (optional)
-   - Select payment method
-   - Click "Process Sale"
+1. Create an empty database on your server  
+2. Run `database/schema.sql`  
+3. Set `InventorySales.ini`:
 
-2. **View Sales History**:
-   - Navigate to Reports tab
-   - Select "Sales Report"
-   - Choose date range
-   - Click "Generate Report"
+```ini
+[Database]
+Type=SQLServer
+Server=localhost
+Database=InventorySales
+Username=sa
+Password=YourPassword
+WindowsAuth=False
+```
 
-### Reporting
-
-Available reports:
-- **Sales Report**: Detailed sales transactions
-- **Inventory Report**: Current stock status
-- **Top Selling Products**: Best performers
-- **Sales by Category**: Category-wise analysis
-- **Sales by Employee**: Employee performance
-- **Low Stock Report**: Items needing reorder
-- **Out of Stock Report**: Items to restock
-- **Profit Analysis**: Profitability metrics
-
-**Export Options**:
-- CSV export (fully functional)
-- PDF export (ready for integration with reporting library)
-
-### Offline Mode (Mobile/Tablet)
-
-1. **Enable Offline Mode**:
-   - Application automatically switches to SQLite when network unavailable
-   - All operations continue working offline
-
-2. **Synchronization**:
-   - Changes are logged in SyncLog table
-   - Auto-sync when connection restored
-   - Manual sync via Sync button in toolbar
-
-3. **Conflict Resolution**:
-   - Server-wins strategy by default
-   - Can be customized in SyncService.pas
+Demo auto-load and **Load Demo Data** are oriented toward **SQLite**; server databases use the same schema but require manual data setup.
 
 ## Development
 
-### Running Tests
-
 ```bash
-# Run DUnitX tests
+# DUnitX tests (when test project is configured)
 dunit-console InventorySales_Tests.dproj
 ```
 
-Test coverage includes:
-- Authentication service tests
-- Product service tests
-- Sales service tests (add as needed)
-- Validation utilities tests
+Additional guides (if present in the repo):
 
-### Adding New Features
-
-1. **Create Entity Class**: Add to `src/Entities/`
-2. **Create Service**: Add to `src/Services/`
-3. **Update UI Forms**: Modify or create forms in `src/Forms/`
-4. **Add Tests**: Create test file in `tests/`
-5. **Update Documentation**: Update this README
-
-### Database Migration
-
-To add new tables or columns:
-
-1. Create migration SQL script in `database/migrations/`
-2. Test on development database
-3. Update entity classes
-4. Update service layer
-5. Document changes
-
-## Deployment
-
-### Desktop (Windows/macOS)
-
-1. **Build Release**:
-   - Select Release configuration
-   - Build for target platform (Win32/Win64/macOS)
-
-2. **Package**:
-   - Include executable
-   - Include `InventorySales.ini.sample`
-   - Include database schema
-   - Include documentation
-
-3. **Installer** (optional):
-   - Use Inno Setup (Windows) or DMG (macOS)
-
-### Mobile (Android/iOS)
-
-1. **Configure Mobile Settings**:
-   - Set app icons and splash screens
-   - Configure permissions (network, storage)
-   - Set version and build numbers
-
-2. **Build APK/IPA**:
-   - Select Android/iOS platform
-   - Configure deployment profile
-   - Build and deploy
-
-3. **Distribution**:
-   - Google Play Store (Android)
-   - Apple App Store (iOS)
-   - Enterprise distribution
+- [QUICKSTART.md](QUICKSTART.md) — extended walkthrough  
+- [INSTALL_RAD_STUDIO_12.md](INSTALL_RAD_STUDIO_12.md) — RAD Studio install and compile tips  
+- [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) — deployment notes  
 
 ## Troubleshooting
 
-### Database Connection Issues
+| Problem | What to check |
+|---------|----------------|
+| Empty Inventory / Sales / Reports | `database\` folder next to EXE; run app once to create DB |
+| Login fails | Use demo passwords above; delete `data\inventory.db` and restart |
+| Romanian or old demo text | Admin → **Load Demo Data**, or delete DB and restart (demo v2 is English) |
+| Users tab missing | Log in as **admin** |
+| SQLite driver error | `sqlite3.dll` in EXE folder or RAD Studio `bin` (see `DatabaseModule.pas`) |
 
-**Problem**: Cannot connect to database
+## Security (production)
 
-**Solutions**:
-1. Verify database server is running
-2. Check connection parameters in `InventorySales.ini`
-3. Ensure user has proper database permissions
-4. Test connection using database client tools
-
-### Offline Sync Issues
-
-**Problem**: Sync fails or data not syncing
-
-**Solutions**:
-1. Check server URL in configuration
-2. Verify network connectivity
-3. Check SyncLog table for error messages
-4. Clear sync log and retry: `DELETE FROM SyncLog WHERE SyncStatus = 'Failed'`
-
-### Permission Errors
-
-**Problem**: User cannot access certain features
-
-**Solutions**:
-1. Verify user role in database
-2. Check role-based permissions in code
-3. Logout and login again to refresh session
-4. Contact administrator to update user role
-
-## Security Considerations
-
-### Production Deployment
-
-1. **Change Default Passwords**:
-   ```sql
-   -- Update admin password
-   UPDATE Users SET PasswordHash = 'NewHashedPassword' WHERE Username = 'admin';
-   ```
-
-2. **Enable HTTPS**:
-   - Use SSL/TLS for database connections
-   - HTTPS for sync server API
-
-3. **Implement Stronger Hashing**:
-   - Replace SHA256 with bcrypt or scrypt
-   - Add password salting
-   - Update `HashUtils.pas`
-
-4. **Network Security**:
-   - Use VPN for remote database access
-   - Implement API authentication tokens
-   - Enable database encryption at rest
-
-5. **Access Control**:
-   - Regular password rotation
-   - Account lockout after failed attempts
-   - Session timeout enforcement
-   - Audit logging
-
-## API Integration (Future)
-
-The sync service is designed to work with RESTful APIs. Expected endpoints:
-
-- `POST /api/sync/upload` - Upload pending changes
-- `GET /api/sync/download` - Download server changes
-- `POST /api/auth/login` - Remote authentication
-- `GET /api/products` - Get products list
-- `POST /api/sales` - Create sale transaction
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+- Replace all demo passwords  
+- Prefer stronger hashing than SHA-256 (extend `HashUtils.pas`)  
+- Use encrypted connections for remote databases  
+- Do not commit `InventorySales.ini` with real secrets (keep local; see `.gitignore`)
 
 ## License
 
-This project is proprietary software. All rights reserved.
-
-## Support
-
-For support and questions:
-- Email: support@yourcompany.com
-- Documentation: See `docs/` folder
-- Issue Tracker: [GitHub Issues](https://github.com/yourrepo/issues)
-
-## Acknowledgments
-
-- Delphi FMX Framework by Embarcadero
-- FireDAC database components
-- DUnitX testing framework
-- Community contributors
+Proprietary — all rights reserved.
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: October 2025
-**Author**: forever_tux
-# Project
-
+**Version:** 1.0.0  
+**Author:** [forevertux](https://github.com/forevertux)  
+**Last updated:** June 2026
