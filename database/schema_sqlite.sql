@@ -112,12 +112,13 @@ CREATE TABLE IF NOT EXISTS SaleItems (
     SaleItemID INTEGER PRIMARY KEY AUTOINCREMENT,
     SaleID INTEGER NOT NULL,
     ProductID INTEGER NOT NULL,
-    ProductCode TEXT,
     ProductName TEXT,
     Quantity INTEGER NOT NULL CHECK (Quantity > 0),
-    UnitPrice REAL NOT NULL,
-    Discount REAL DEFAULT 0,
+    UnitPrice REAL NOT NULL CHECK (UnitPrice >= 0),
+    DiscountPercent REAL DEFAULT 0,
+    TaxPercent REAL DEFAULT 0,
     LineTotal REAL NOT NULL,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (SaleID) REFERENCES Sales(SaleID) ON DELETE CASCADE,
     FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
 );

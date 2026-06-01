@@ -11,11 +11,11 @@ uses
   System.StartUpCopy,
   FMX.Forms,
   DatabaseModule in 'src\DataModules\DatabaseModule.pas' {DMDatabase: TDataModule},
-  LoginForm in 'src\Forms\LoginForm.pas' {FrmLogin},
-  MainForm in 'src\Forms\MainForm.pas' {FrmMain},
-  InventoryForm in 'src\Forms\InventoryForm.pas' {FrmInventory},
-  SalesForm in 'src\Forms\SalesForm.pas' {FrmSales},
-  ReportsForm in 'src\Forms\ReportsForm.pas' {FrmReports},
+  LoginForm in 'src\Forms\LoginForm.pas' {frmLogin},
+  MainForm in 'src\Forms\MainForm.pas' {frmMain},
+  InventoryForm in 'src\Forms\InventoryForm.pas' {frmInventory},
+  SalesForm in 'src\Forms\SalesForm.pas' {frmSales},
+  ReportsForm in 'src\Forms\ReportsForm.pas' {frmReports},
   UserEntity in 'src\Entities\UserEntity.pas',
   ProductEntity in 'src\Entities\ProductEntity.pas',
   SaleEntity in 'src\Entities\SaleEntity.pas',
@@ -36,6 +36,6 @@ uses
 begin
   Application.Initialize;
   Application.CreateForm(TDMDatabase, DMDatabase);
-  Application.CreateForm(TFrmLogin, FrmLogin);
+  Application.CreateForm(TfrmLogin, frmLogin);
   Application.Run;
 end.

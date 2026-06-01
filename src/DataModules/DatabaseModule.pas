@@ -77,6 +77,10 @@ type
     function TestConnection: Boolean;
     procedure SwitchToOfflineMode;
     procedure SwitchToOnlineMode;
+    function CreateQuery: TFDQuery;
+    function SqlDateExpr(const FieldName: string): string;
+    function SqlDateGroupExpr(const FieldName: string): string;
+    function ConfigFilePath: string;
     property DatabaseType: TDatabaseType read FDatabaseType;
     property IsOfflineMode: Boolean read FIsOfflineMode;
   end;
@@ -90,28 +94,51 @@ implementation
 
 {$R *.dfm}
 
-uses
-  FMX.Dialogs;
-
 procedure TDMDatabase.DataModuleCreate(Sender: TObject);
 begin
   {$IFDEF MOBILE}
   FConfigFile := TPath.Combine(TPath.GetDocumentsPath, 'InventorySales.ini');
   FLocalDBPath := TPath.Combine(TPath.GetDocumentsPath, 'inventory_local.db');
   {$ELSE}
-  // On desktop, look for INI file in executable directory first, then Documents
   FConfigFile := TPath.Combine(ExtractFilePath(ParamStr(0)), 'InventorySales.ini');
   if not FileExists(FConfigFile) then
     FConfigFile := TPath.Combine(TPath.GetDocumentsPath, 'InventorySales.ini');
-  FLocalDBPath := TPath.Combine(ExtractFilePath(ParamStr(0)), 'data\inventory_local.db');
+  FLocalDBPath := TPath.Combine(ExtractFilePath(ParamStr(0)), 'data', 'inventory_local.db');
   {$ENDIF}
 
   FIsConnected := False;
   FIsOfflineMode := False;
 
-  ShowMessage('Config file: ' + FConfigFile + #13#10 + 'Exists: ' + BoolToStr(FileExists(FConfigFile), True));
-
   LoadConfiguration;
+end;
+
+function TDMDatabase.ConfigFilePath: string;
+begin
+  Result := FConfigFile;
+end;
+
+function TDMDatabase.CreateQuery: TFDQuery;
+begin
+  Result := TFDQuery.Create(nil);
+  Result.Connection := FDConnection;
+  Result.Transaction := FDTransaction;
+end;
+
+function TDMDatabase.SqlDateExpr(const FieldName: string): string;
+begin
+  case FDatabaseType of
+    dtSQLServer:
+      Result := Format('CAST(%s AS DATE)', [FieldName]);
+    dtOracle:
+      Result := Format('TRUNC(%s)', [FieldName]);
+  else
+    Result := Format('DATE(%s)', [FieldName]);
+  end;
+end;
+
+function TDMDatabase.SqlDateGroupExpr(const FieldName: string): string;
+begin
+  Result := SqlDateExpr(FieldName);
 end;
 
 procedure TDMDatabase.DataModuleDestroy(Sender: TObject);
@@ -222,8 +249,7 @@ begin
   else
     FullPath := DatabasePath;
 
-  // Normalize path separators
-  FullPath := StringReplace(FullPath, '/', '\', [rfReplaceAll]);
+  FullPath := TPath.GetFullPath(FullPath);
 
   // Create directory if it doesn't exist
   DBDir := ExtractFilePath(FullPath);
@@ -237,15 +263,8 @@ begin
     end;
   end;
 
-  // Show debug info
-  ShowMessage('Database will be created at: ' + FullPath + #13#10 + 'Directory exists: ' + BoolToStr(TDirectory.Exists(DBDir), True));
-
-  // Create SQLite driver link if it doesn't exist
   if not Assigned(FDPhysSQLiteDriverLink) then
-  begin
     FDPhysSQLiteDriverLink := TFDPhysSQLiteDriverLink.Create(Self);
-    ShowMessage('Created FDPhysSQLiteDriverLink manually');
-  end;
 
   // Configure SQLite driver link - try multiple locations
   if FileExists(TPath.Combine(ExtractFilePath(ParamStr(0)), 'sqlite3.dll')) then
@@ -254,8 +273,6 @@ begin
     FDPhysSQLiteDriverLink.VendorLib := 'C:\Program Files (x86)\Embarcadero\Studio\23.0\bin\sqlite3.dll'
   else
     FDPhysSQLiteDriverLink.VendorLib := 'sqlite3.dll'; // Try system PATH
-
-  ShowMessage('SQLite VendorLib set to: ' + FDPhysSQLiteDriverLink.VendorLib);
 
   // Clear and reconfigure connection
   FDConnection.Close;
@@ -331,20 +348,12 @@ begin
       dtSQLite:
       begin
         Database := GetConfigValue('Database', 'Database', FLocalDBPath);
-        ShowMessage('Setting up SQLite with database path: ' + Database);
         SetupSQLiteConnection(Database);
       end;
     end;
 
-    // Try to connect
-    ShowMessage('About to connect to database...');
     FDConnection.Connected := True;
-    ShowMessage('Connected successfully!');
-
-    // Initialize database schema if needed
-    ShowMessage('About to initialize database schema...');
     InitializeDatabase;
-    ShowMessage('Database initialization complete!');
     FIsConnected := True;
     Result := True;
 
@@ -354,11 +363,9 @@ begin
       FIsConnected := False;
 
       {$IFDEF MOBILE}
-      // On mobile, switch to offline mode if connection fails
       SwitchToOfflineMode;
-      Result := True; // Return true as offline mode is available
+      Result := True;
       {$ELSE}
-      ShowMessage('Database connection failed: ' + E.Message);
       Result := False;
       {$ENDIF}
     end;
@@ -468,11 +475,12 @@ begin
     FDatabaseType := dtSQLite;
     SetupSQLiteConnection(FLocalDBPath);
     FDConnection.Connected := True;
+    InitializeDatabase;
     FIsOfflineMode := True;
     FIsConnected := True;
   except
     on E: Exception do
-      ShowMessage('Error switching to offline mode: ' + E.Message);
+      raise;
   end;
 end;
 
@@ -529,12 +537,56 @@ begin
         'IsSynced INTEGER DEFAULT 0)');
 
       LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Users (' +
+        'UserID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'Username TEXT NOT NULL UNIQUE, ' +
+        'PasswordHash TEXT NOT NULL, ' +
+        'FullName TEXT NOT NULL, ' +
+        'Email TEXT, ' +
+        'Phone TEXT, ' +
+        'RoleID INTEGER NOT NULL, ' +
+        'BranchID INTEGER, ' +
+        'IsActive INTEGER DEFAULT 1, ' +
+        'LastLogin DATETIME, ' +
+        'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+        'UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)');
+
+      LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Branches (' +
+        'BranchID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'BranchCode TEXT NOT NULL UNIQUE, ' +
+        'BranchName TEXT NOT NULL, ' +
+        'IsActive INTEGER DEFAULT 1)');
+
+      LocalConn.ExecSQL(
+        'CREATE TABLE IF NOT EXISTS Categories (' +
+        'CategoryID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        'CategoryCode TEXT NOT NULL UNIQUE, ' +
+        'CategoryName TEXT NOT NULL, ' +
+        'IsActive INTEGER DEFAULT 1)');
+
+      LocalConn.ExecSQL(
+        'INSERT OR IGNORE INTO Branches (BranchID, BranchCode, BranchName) ' +
+        'VALUES (1, ''MAIN'', ''Main Branch'')');
+
+      LocalConn.ExecSQL(
+        'INSERT OR IGNORE INTO Categories (CategoryID, CategoryCode, CategoryName) ' +
+        'VALUES (1, ''GEN'', ''General'')');
+
+      LocalConn.ExecSQL(
+        'INSERT OR IGNORE INTO Users (UserID, Username, PasswordHash, FullName, RoleID, BranchID) ' +
+        'VALUES (1, ''admin'', ''6B3A55E0261B0304143F805A24924D0C1C44524821305F31D9277843B8A10F4E'', ' +
+        '''System Administrator'', 1, 1)');
+
+      LocalConn.ExecSQL(
         'CREATE TABLE IF NOT EXISTS SaleItems (' +
         'SaleItemID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
         'SaleID INTEGER NOT NULL, ' +
         'ProductID INTEGER NOT NULL, ' +
         'Quantity INTEGER NOT NULL, ' +
         'UnitPrice REAL NOT NULL, ' +
+        'DiscountPercent REAL DEFAULT 0, ' +
+        'TaxPercent REAL DEFAULT 0, ' +
         'LineTotal REAL NOT NULL)');
 
       LocalConn.ExecSQL(
@@ -605,9 +657,7 @@ begin
         end;
       end
       else
-      begin
-        ShowMessage('Schema file not found. Expected at: ' + SchemaFile);
-      end;
+        CreateLocalDatabase;
     end;
 
   except

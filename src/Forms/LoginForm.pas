@@ -119,7 +119,7 @@ var
   IniPath: string;
 begin
   try
-    IniPath := TPath.Combine(TPath.GetDocumentsPath, 'SalesInventory.ini');
+    IniPath := DMDatabase.ConfigFilePath;
 
     if TFile.Exists(IniPath) then
     begin
@@ -145,7 +145,7 @@ var
   IniPath: string;
 begin
   try
-    IniPath := TPath.Combine(TPath.GetDocumentsPath, 'SalesInventory.ini');
+    IniPath := DMDatabase.ConfigFilePath;
 
     IniFile := TIniFile.Create(IniPath);
     try

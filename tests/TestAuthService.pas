@@ -198,30 +198,33 @@ end;
 procedure TTestAuthService.TestDeleteUser;
 var
   NewUser: TUser;
+  CreatedUser: TUser;
+  TempUsername: string;
   UserID: Integer;
   DeleteResult: Boolean;
 begin
-  // Login as admin
   FAuthService.Login('admin', 'Admin@123');
 
-  // Create a user to delete
+  TempUsername := 'tempuser' + FormatDateTime('yyyymmddhhnnss', Now);
   NewUser := TUser.Create;
   try
-    NewUser.Username := 'tempuser' + FormatDateTime('yyyymmddhhnnss', Now);
+    NewUser.Username := TempUsername;
     NewUser.FullName := 'Temporary User';
     NewUser.RoleID := ROLE_EMPLOYEE;
     NewUser.BranchID := 1;
 
     if FAuthService.CreateUser(NewUser, 'TempPass123') then
     begin
-      // Get the created user
-      NewUser.Free;
-      NewUser := FAuthService.GetUserByUsername('tempuser' + FormatDateTime('yyyymmddhhnnss', Now));
-      if Assigned(NewUser) then
-      begin
-        UserID := NewUser.UserID;
-        DeleteResult := FAuthService.DeleteUser(UserID);
-        Assert.IsTrue(DeleteResult, 'User deletion should succeed');
+      CreatedUser := FAuthService.GetUserByUsername(TempUsername);
+      try
+        if Assigned(CreatedUser) then
+        begin
+          UserID := CreatedUser.UserID;
+          DeleteResult := FAuthService.DeleteUser(UserID);
+          Assert.IsTrue(DeleteResult, 'User deletion should succeed');
+        end;
+      finally
+        CreatedUser.Free;
       end;
     end;
   finally
