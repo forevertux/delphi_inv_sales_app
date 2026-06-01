@@ -1,331 +1,322 @@
 object frmSales: TfrmSales
   Align = Client
   Size.Width = 900.000000000000000000
-  Size.Height = 700.000000000000000000
+  Size.Height = 600.000000000000000000
   Size.PlatformDefault = False
   object LayoutTop: TLayout
     Align = Top
     Padding.Left = 10.000000000000000000
-    Padding.Top = 10.000000000000000000
+    Padding.Top = 8.000000000000000000
     Padding.Right = 10.000000000000000000
-    Padding.Bottom = 10.000000000000000000
+    Padding.Bottom = 8.000000000000000000
     Size.Width = 900.000000000000000000
-    Size.Height = 180.000000000000000000
+    Size.Height = 200.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object lblTitle: TLabel
       Align = Top
       StyledSettings = [Family]
-      Margins.Bottom = 10.000000000000000000
-      Position.X = 10.000000000000000000
-      Position.Y = 10.000000000000000000
       Size.Width = 880.000000000000000000
-      Size.Height = 30.000000000000000000
+      Size.Height = 28.000000000000000000
       Size.PlatformDefault = False
-      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.Font.Size = 18.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
       Text = 'New Sale'
       TabOrder = 0
     end
-    object LayoutProductSearch: TLayout
+    object edtProductSearch: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
       Align = Top
-      Margins.Top = 50.000000000000000000
-      Position.X = 10.000000000000000000
-      Position.Y = 50.000000000000000000
+      Margins.Top = 4.000000000000000000
       Size.Width = 880.000000000000000000
-      Size.Height = 110.000000000000000000
+      Size.Height = 36.000000000000000000
       Size.PlatformDefault = False
+      TextPrompt = 'Search products...'
       TabOrder = 1
-      object edtProductSearch: TEdit
-        Touch.InteractiveGestures = [LongTap, DoubleTap]
-        Align = Top
-        TabOrder = 0
-        Margins.Bottom = 5.000000000000000000
-        Size.Width = 880.000000000000000000
-        Size.Height = 40.000000000000000000
-        Size.PlatformDefault = False
-        TextPrompt = 'Search products...'
-        OnChange = edtProductSearchChange
-      end
-      object lstProducts: TListBox
-        Align = Top
-        Margins.Top = 45.000000000000000000
-        Position.Y = 45.000000000000000000
-        Size.Width = 880.000000000000000000
-        Size.Height = 120.000000000000000000
-        Size.PlatformDefault = False
-        TabOrder = 1
-        DisableFocusEffect = True
-        DefaultItemStyles.ItemStyle = ''
-        DefaultItemStyles.GroupHeaderStyle = ''
-        DefaultItemStyles.GroupFooterStyle = ''
-        Viewport.Width = 876.000000000000000000
-        Viewport.Height = 116.000000000000000000
-        OnClick = lstProductsClick
-      end
+      OnChange = edtProductSearchChange
+    end
+    object lstProducts: TListBox
+      Align = Top
+      Margins.Top = 4.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 88.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      DisableFocusEffect = True
+      DefaultItemStyles.ItemStyle = ''
+      DefaultItemStyles.GroupHeaderStyle = ''
+      DefaultItemStyles.GroupFooterStyle = ''
+      OnClick = lstProductsClick
+    end
+    object LayoutAddRow: TLayout
+      Align = Top
+      Margins.Top = 4.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
       object edtQuantity: TEdit
         Touch.InteractiveGestures = [LongTap, DoubleTap]
         Align = Left
-        TabOrder = 2
-        Margins.Top = 175.000000000000000000
-        Margins.Right = 10.000000000000000000
-        Position.Y = 175.000000000000000000
-        Size.Width = 80.000000000000000000
-        Size.Height = 40.000000000000000000
+        Margins.Right = 8.000000000000000000
+        Size.Width = 72.000000000000000000
+        Size.Height = 36.000000000000000000
         Size.PlatformDefault = False
         TextPrompt = 'Qty'
         Text = '1'
         KeyboardType = NumberPad
+        TabOrder = 0
       end
       object btnAddToCart: TButton
         Align = Left
-        Margins.Top = 175.000000000000000000
-        Position.X = 90.000000000000000000
-        Position.Y = 175.000000000000000000
-        Size.Width = 150.000000000000000000
-        Size.Height = 40.000000000000000000
+        Size.Width = 140.000000000000000000
+        Size.Height = 36.000000000000000000
         Size.PlatformDefault = False
-        TabOrder = 3
+        TabOrder = 1
         Text = 'Add to Cart'
         TextSettings.Trimming = None
         OnClick = btnAddToCartClick
       end
     end
   end
-  object LayoutContent: TLayout
-    Align = Client
-    Padding.Left = 10.000000000000000000
-    Padding.Right = 10.000000000000000000
-    Size.Width = 900.000000000000000000
-    Size.Height = 250.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 1
-    object GridCart: TStringGrid
-      Align = Client
-      CanFocus = True
-      ClipChildren = True
-      Size.Width = 880.000000000000000000
-      Size.Height = 250.000000000000000000
-      Size.PlatformDefault = False
-      TabOrder = 0
-      RowCount = 0
-      Viewport.Width = 876.000000000000000000
-      Viewport.Height = 225.000000000000000000
-    end
-  end
   object LayoutBottom: TLayout
     Align = Bottom
     Padding.Left = 10.000000000000000000
-    Padding.Top = 10.000000000000000000
+    Padding.Top = 8.000000000000000000
     Padding.Right = 10.000000000000000000
-    Padding.Bottom = 10.000000000000000000
-    Position.Y = 430.000000000000000000
+    Padding.Bottom = 8.000000000000000000
     Size.Width = 900.000000000000000000
-    Size.Height = 270.000000000000000000
+    Size.Height = 228.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 2
+    TabOrder = 1
     object LayoutCustomer: TLayout
       Align = Top
-      Position.X = 10.000000000000000000
-      Position.Y = 10.000000000000000000
       Size.Width = 880.000000000000000000
-      Size.Height = 100.000000000000000000
+      Size.Height = 108.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       object edtCustomerName: TEdit
         Touch.InteractiveGestures = [LongTap, DoubleTap]
         Align = Top
-        TabOrder = 0
-        Margins.Bottom = 10.000000000000000000
+        Margins.Bottom = 4.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 40.000000000000000000
+        Size.Height = 32.000000000000000000
         Size.PlatformDefault = False
         TextPrompt = 'Customer Name (Optional)'
+        TabOrder = 0
       end
       object edtCustomerPhone: TEdit
         Touch.InteractiveGestures = [LongTap, DoubleTap]
         Align = Top
-        TabOrder = 1
-        Margins.Top = 50.000000000000000000
-        Position.Y = 50.000000000000000000
+        Margins.Top = 4.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 40.000000000000000000
+        Size.Height = 32.000000000000000000
         Size.PlatformDefault = False
         TextPrompt = 'Phone (Optional)'
         KeyboardType = PhonePad
+        TabOrder = 1
       end
       object cmbPaymentMethod: TComboBox
         Align = Top
-        Margins.Top = 100.000000000000000000
-        Position.Y = 100.000000000000000000
+        Margins.Top = 4.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 40.000000000000000000
+        Size.Height = 32.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
       end
     end
     object LayoutTotals: TLayout
       Align = Top
-      Margins.Top = 120.000000000000000000
-      Position.X = 10.000000000000000000
-      Position.Y = 120.000000000000000000
+      Margins.Top = 4.000000000000000000
       Size.Width = 880.000000000000000000
-      Size.Height = 80.000000000000000000
+      Size.Height = 112.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
-      object lblSubtotal: TLabel
+      object LayoutRowSubtotal: TLayout
         Align = Top
-        StyledSettings = [Family, Style]
-        Margins.Bottom = 5.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 20.000000000000000000
+        Size.Height = 24.000000000000000000
         Size.PlatformDefault = False
-        TextSettings.Font.Size = 14.000000000000000000
-        Text = 'Subtotal:'
         TabOrder = 0
+        object lblSubtotal: TLabel
+          Align = Left
+          StyledSettings = [Family, Style]
+          Size.Width = 120.000000000000000000
+          Size.Height = 24.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 14.000000000000000000
+          TextSettings.VertAlign = Center
+          Text = 'Subtotal:'
+          TabOrder = 0
+        end
+        object lblSubtotalValue: TLabel
+          Align = Client
+          StyledSettings = [Family]
+          Size.Width = 760.000000000000000000
+          Size.Height = 24.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 14.000000000000000000
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.HorzAlign = Trailing
+          TextSettings.VertAlign = Center
+          Text = '$0.00'
+          TabOrder = 1
+        end
       end
-      object lblSubtotalValue: TLabel
+      object LayoutRowDiscount: TLayout
         Align = Top
-        StyledSettings = [Family]
-        Margins.Top = 25.000000000000000000
-        Margins.Bottom = 5.000000000000000000
-        Position.Y = 25.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 20.000000000000000000
+        Size.Height = 24.000000000000000000
         Size.PlatformDefault = False
-        TextSettings.Font.Size = 16.000000000000000000
-        TextSettings.Font.StyleExt = {00070000000000000004000000}
-        TextSettings.HorzAlign = Trailing
-        Text = '$0.00'
         TabOrder = 1
+        object lblDiscount: TLabel
+          Align = Left
+          StyledSettings = [Family, Style]
+          Size.Width = 120.000000000000000000
+          Size.Height = 24.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 14.000000000000000000
+          TextSettings.VertAlign = Center
+          Text = 'Discount:'
+          TabOrder = 0
+        end
+        object lblDiscountValue: TLabel
+          Align = Client
+          StyledSettings = [Family, Style]
+          Size.Width = 760.000000000000000000
+          Size.Height = 24.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 14.000000000000000000
+          TextSettings.HorzAlign = Trailing
+          TextSettings.VertAlign = Center
+          Text = '$0.00'
+          TabOrder = 1
+        end
       end
-      object lblDiscount: TLabel
+      object LayoutRowTax: TLayout
         Align = Top
-        StyledSettings = [Family, Style]
-        Margins.Top = 50.000000000000000000
-        Margins.Bottom = 5.000000000000000000
-        Position.Y = 50.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 20.000000000000000000
+        Size.Height = 24.000000000000000000
         Size.PlatformDefault = False
-        TextSettings.Font.Size = 14.000000000000000000
-        Text = 'Discount:'
         TabOrder = 2
+        object lblTax: TLabel
+          Align = Left
+          StyledSettings = [Family, Style]
+          Size.Width = 120.000000000000000000
+          Size.Height = 24.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 14.000000000000000000
+          TextSettings.VertAlign = Center
+          Text = 'Tax:'
+          TabOrder = 0
+        end
+        object lblTaxValue: TLabel
+          Align = Client
+          StyledSettings = [Family, Style]
+          Size.Width = 760.000000000000000000
+          Size.Height = 24.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 14.000000000000000000
+          TextSettings.HorzAlign = Trailing
+          TextSettings.VertAlign = Center
+          Text = '$0.00'
+          TabOrder = 1
+        end
       end
-      object lblDiscountValue: TLabel
+      object LayoutRowTotal: TLayout
         Align = Top
-        StyledSettings = [Family, Style]
-        Margins.Top = 75.000000000000000000
-        Margins.Bottom = 5.000000000000000000
-        Position.Y = 75.000000000000000000
         Size.Width = 880.000000000000000000
-        Size.Height = 20.000000000000000000
+        Size.Height = 32.000000000000000000
         Size.PlatformDefault = False
-        TextSettings.Font.Size = 14.000000000000000000
-        TextSettings.HorzAlign = Trailing
-        Text = '$0.00'
         TabOrder = 3
-      end
-      object lblTax: TLabel
-        Align = Top
-        StyledSettings = [Family, Style]
-        Margins.Top = 100.000000000000000000
-        Margins.Bottom = 5.000000000000000000
-        Position.Y = 100.000000000000000000
-        Size.Width = 880.000000000000000000
-        Size.Height = 20.000000000000000000
-        Size.PlatformDefault = False
-        TextSettings.Font.Size = 14.000000000000000000
-        Text = 'Tax:'
-        TabOrder = 4
-      end
-      object lblTaxValue: TLabel
-        Align = Top
-        StyledSettings = [Family, Style]
-        Margins.Top = 125.000000000000000000
-        Margins.Bottom = 10.000000000000000000
-        Position.Y = 125.000000000000000000
-        Size.Width = 880.000000000000000000
-        Size.Height = 20.000000000000000000
-        Size.PlatformDefault = False
-        TextSettings.Font.Size = 14.000000000000000000
-        TextSettings.HorzAlign = Trailing
-        Text = '$0.00'
-        TabOrder = 5
-      end
-      object lblTotal: TLabel
-        Align = Top
-        StyledSettings = [Family]
-        Margins.Top = 155.000000000000000000
-        Margins.Bottom = 5.000000000000000000
-        Position.Y = 155.000000000000000000
-        Size.Width = 880.000000000000000000
-        Size.Height = 25.000000000000000000
-        Size.PlatformDefault = False
-        TextSettings.Font.Size = 18.000000000000000000
-        TextSettings.Font.StyleExt = {00070000000000000004000000}
-        Text = 'Total:'
-        TabOrder = 6
-      end
-      object lblTotalValue: TLabel
-        Align = Top
-        StyledSettings = [Family]
-        Margins.Top = 185.000000000000000000
-        Position.Y = 185.000000000000000000
-        Size.Width = 880.000000000000000000
-        Size.Height = 30.000000000000000000
-        Size.PlatformDefault = False
-        TextSettings.Font.Size = 24.000000000000000000
-        TextSettings.Font.StyleExt = {00070000000000000004000000}
-        TextSettings.FontColor = xFF4CAF50
-        TextSettings.HorzAlign = Trailing
-        Text = '$0.00'
-        TabOrder = 7
+        object lblTotal: TLabel
+          Align = Left
+          StyledSettings = [Family]
+          Size.Width = 120.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 16.000000000000000000
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.VertAlign = Center
+          Text = 'Total:'
+          TabOrder = 0
+        end
+        object lblTotalValue: TLabel
+          Align = Client
+          StyledSettings = [Family]
+          Size.Width = 760.000000000000000000
+          Size.Height = 32.000000000000000000
+          Size.PlatformDefault = False
+          TextSettings.Font.Size = 20.000000000000000000
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+          TextSettings.FontColor = xFF4CAF50
+          TextSettings.HorzAlign = Trailing
+          TextSettings.VertAlign = Center
+          Text = '$0.00'
+          TabOrder = 1
+        end
       end
     end
     object LayoutButtons: TLayout
       Align = Top
-      Margins.Top = 210.000000000000000000
-      Position.X = 10.000000000000000000
-      Position.Y = 210.000000000000000000
+      Margins.Top = 4.000000000000000000
       Size.Width = 880.000000000000000000
-      Size.Height = 50.000000000000000000
+      Size.Height = 40.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 2
       object btnRemoveItem: TButton
         Align = Left
-        Margins.Right = 10.000000000000000000
-        Size.Width = 150.000000000000000000
-        Size.Height = 50.000000000000000000
+        Margins.Right = 8.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 40.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
-        Text = 'Remove Item'
+        Text = 'Remove'
         TextSettings.Trimming = None
         OnClick = btnRemoveItemClick
       end
       object btnClearSale: TButton
         Align = Left
-        Margins.Right = 10.000000000000000000
-        Position.X = 160.000000000000000000
-        Size.Width = 150.000000000000000000
-        Size.Height = 50.000000000000000000
+        Margins.Right = 8.000000000000000000
+        Size.Width = 120.000000000000000000
+        Size.Height = 40.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 1
-        Text = 'Clear Sale'
+        Text = 'Clear'
         TextSettings.Trimming = None
         OnClick = btnClearSaleClick
       end
       object btnProcessSale: TButton
         Align = Right
-        Position.X = 720.000000000000000000
-        Size.Width = 160.000000000000000000
-        Size.Height = 50.000000000000000000
+        Size.Width = 140.000000000000000000
+        Size.Height = 40.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 2
         Text = 'Process Sale'
         TextSettings.Trimming = None
         OnClick = btnProcessSaleClick
       end
+    end
+  end
+  object LayoutContent: TLayout
+    Align = Client
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 4.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 4.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 180.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object GridCart: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 880.000000000000000000
+      Size.Height = 172.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      RowCount = 0
     end
   end
 end

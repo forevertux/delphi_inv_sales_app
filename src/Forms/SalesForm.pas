@@ -36,7 +36,7 @@ type
     LayoutCustomer: TLayout;
     LayoutTotals: TLayout;
     LayoutButtons: TLayout;
-    LayoutProductSearch: TLayout;
+    LayoutAddRow: TLayout;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
