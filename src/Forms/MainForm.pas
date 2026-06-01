@@ -39,6 +39,7 @@ type
     btnOpenInventory: TButton;
     btnOpenSales: TButton;
     btnOpenReports: TButton;
+    btnLoadDemoData: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnLogoutClick(Sender: TObject);
@@ -48,6 +49,8 @@ type
     procedure btnOpenInventoryClick(Sender: TObject);
     procedure btnOpenSalesClick(Sender: TObject);
     procedure btnOpenReportsClick(Sender: TObject);
+    procedure btnLoadDemoDataClick(Sender: TObject);
+    procedure OnLoadDemoConfirm(const AResult: TModalResult);
   private
     { Private declarations }
     procedure SetupUserInterface;
@@ -118,11 +121,13 @@ begin
   begin
     TabUsers.Visible := GAuthService.CurrentUser.CanAccessUserManagement;
     TabReports.Visible := GAuthService.CurrentUser.CanAccessReports;
+    btnLoadDemoData.Visible := GAuthService.CurrentUser.IsAdmin;
   end
   else
   begin
     TabUsers.Visible := False;
     TabReports.Visible := False;
+    btnLoadDemoData.Visible := False;
   end;
 end;
 
@@ -253,6 +258,42 @@ end;
 procedure TfrmMain.btnOpenReportsClick(Sender: TObject);
 begin
   ShowReportsTab;
+end;
+
+procedure TfrmMain.OnLoadDemoConfirm(const AResult: TModalResult);
+begin
+  if AResult <> mrYes then
+    Exit;
+
+  if DMDatabase.LoadDemoData(True) then
+  begin
+    ShowMessage('Demo data loaded successfully.' + sLineBreak + sLineBreak +
+      'Logins: admin/Admin@123, manager/Manager@123, employee/Employee@123');
+    LoadDashboardData;
+    if Assigned(frmInventory) then
+      frmInventory.ActivateModule;
+  end
+  else
+    ShowMessage('Could not load demo data. Copy database\demo_data_sqlite.sql next to the EXE.');
+end;
+
+procedure TfrmMain.btnLoadDemoDataClick(Sender: TObject);
+var
+  Msg: string;
+begin
+  if not GAuthService.CurrentUser.IsAdmin then
+  begin
+    ShowMessage(MSG_ACCESS_DENIED);
+    Exit;
+  end;
+
+  if DMDatabase.IsDemoDataLoaded then
+    Msg := 'Demo data is already loaded. Reload and replace demo products/sales?'
+  else
+    Msg := 'Load demo products, categories, users and sample sales into the database?';
+
+  TDialogService.MessageDialog(Msg, TMsgDlgType.mtConfirmation,
+    [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo, 0, OnLoadDemoConfirm);
 end;
 
 procedure TfrmMain.TabControl1Change(Sender: TObject);

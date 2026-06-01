@@ -261,6 +261,23 @@ object frmMain: TfrmMain
               TabOrder = 1
             end
           end
+          object btnLoadDemoData: TButton
+            Align = Top
+            Margins.Left = 20.000000000000000000
+            Margins.Top = 320.000000000000000000
+            Margins.Right = 20.000000000000000000
+            Margins.Bottom = 10.000000000000000000
+            Position.X = 40.000000000000000000
+            Position.Y = 320.000000000000000000
+            Size.Width = 920.000000000000000000
+            Size.Height = 45.000000000000000000
+            Size.PlatformDefault = False
+            TabOrder = 1
+            Text = 'Load Demo Data'
+            TextSettings.Trimming = None
+            Visible = False
+            OnClick = btnLoadDemoDataClick
+          end
           object btnRefreshDashboard: TButton
             Align = Top
             Margins.Left = 20.000000000000000000

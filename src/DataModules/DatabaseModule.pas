@@ -64,6 +64,9 @@ type
     procedure LoadConfiguration;
     procedure CreateLocalDatabase;
     procedure InitializeDatabase;
+    function RunSQLScriptFromFile(const AFileName: string): Boolean;
+    function ResolveDatabaseFilePath(const AFileName: string): string;
+    procedure ClearDemoData;
   public
     function Connect: Boolean;
     procedure Disconnect;
@@ -83,6 +86,8 @@ type
     function ConfigFilePath: string;
     function ReadBoolField(Field: TField): Boolean;
     procedure SetBoolParam(Param: TFDParam; Value: Boolean);
+    function IsDemoDataLoaded: Boolean;
+    function LoadDemoData(const AReload: Boolean = False): Boolean;
     property DatabaseType: TDatabaseType read FDatabaseType;
     property IsOfflineMode: Boolean read FIsOfflineMode;
   end;
@@ -380,6 +385,8 @@ begin
 
     FDConnection.Connected := True;
     InitializeDatabase;
+    if FDatabaseType = dtSQLite then
+      LoadDemoData(False);
     FIsConnected := True;
     if Assigned(GSyncService) then
       GSyncService.EnsureInitialized;
@@ -504,6 +511,7 @@ begin
     SetupSQLiteConnection(FLocalDBPath);
     FDConnection.Connected := True;
     InitializeDatabase;
+    LoadDemoData(False);
     FIsOfflineMode := True;
     FIsConnected := True;
     if Assigned(GSyncService) then
@@ -639,14 +647,43 @@ begin
 end;
 
 
+function TDMDatabase.ResolveDatabaseFilePath(const AFileName: string): string;
+begin
+  Result := TPath.Combine(ExtractFilePath(ParamStr(0)), 'database', AFileName);
+  if not TFile.Exists(Result) then
+    Result := TPath.Combine(ExtractFilePath(ParamStr(0)), '..\..', 'database', AFileName);
+end;
+
+function TDMDatabase.RunSQLScriptFromFile(const AFileName: string): Boolean;
+var
+  ScriptFile: string;
+  Script: TFDScript;
+begin
+  Result := False;
+  ScriptFile := ResolveDatabaseFilePath(AFileName);
+  if not TFile.Exists(ScriptFile) then
+    Exit;
+
+  Script := TFDScript.Create(nil);
+  try
+    Script.Connection := FDConnection;
+    Script.ScriptOptions.BreakOnError := False;
+    Script.ScriptOptions.CommandSeparator := ';';
+    Script.SQLScripts.Clear;
+    Script.SQLScripts.Add.SQL.LoadFromFile(ScriptFile);
+    Script.ValidateAll;
+    Script.ExecuteAll;
+    Result := True;
+  finally
+    Script.Free;
+  end;
+end;
+
 procedure TDMDatabase.InitializeDatabase;
 var
   Query: TFDQuery;
-  SchemaFile: string;
-  Script: TFDScript;
 begin
   try
-    // Check if Users table exists
     Query := TFDQuery.Create(nil);
     try
       Query.Connection := FDConnection;
@@ -654,39 +691,16 @@ begin
         Query.SQL.Text := 'SELECT COUNT(*) FROM Users';
         Query.Open;
         Query.Close;
-        // Table exists, no need to initialize
         Exit;
       except
-        // Table doesn't exist, continue with initialization
       end;
     finally
       Query.Free;
     end;
 
-    // For SQLite, execute the schema file using TFDScript
     if FDatabaseType = dtSQLite then
     begin
-      // Try multiple locations for the schema file
-      SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), 'database\schema_sqlite.sql');
-      if not TFile.Exists(SchemaFile) then
-        SchemaFile := TPath.Combine(ExtractFilePath(ParamStr(0)), '..\..', 'database\schema_sqlite.sql');
-
-      if TFile.Exists(SchemaFile) then
-      begin
-        Script := TFDScript.Create(nil);
-        try
-          Script.Connection := FDConnection;
-          Script.ScriptOptions.BreakOnError := False;
-          Script.ScriptOptions.CommandSeparator := ';';
-          Script.SQLScripts.Clear;
-          Script.SQLScripts.Add.SQL.LoadFromFile(SchemaFile);
-          Script.ValidateAll;
-          Script.ExecuteAll;
-        finally
-          Script.Free;
-        end;
-      end
-      else
+      if not RunSQLScriptFromFile('schema_sqlite.sql') then
         CreateLocalDatabase;
     end;
 
@@ -694,6 +708,69 @@ begin
     on E: Exception do
       ShowMessage('Error initializing database: ' + E.Message);
   end;
+end;
+
+function TDMDatabase.IsDemoDataLoaded: Boolean;
+var
+  Query: TFDQuery;
+begin
+  Result := False;
+  if not FDConnection.Connected then
+    Exit;
+
+  Query := CreateQuery;
+  try
+    try
+      Query.SQL.Text :=
+        'SELECT MetaValue FROM SyncMetadata WHERE MetaKey = ''DemoDataVersion''';
+      Query.Open;
+      Result := (not Query.IsEmpty) and (Trim(Query.Fields[0].AsString) <> '');
+      Query.Close;
+    except
+      Result := False;
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+procedure TDMDatabase.ClearDemoData;
+begin
+  if not FDConnection.Connected then
+    Exit;
+
+  try
+    ExecuteSQL(
+      'DELETE FROM SaleItems WHERE SaleID IN (' +
+      'SELECT SaleID FROM Sales WHERE SaleNumber LIKE ''SALE202505%'' ' +
+      'OR SaleNumber LIKE ''SALE202506%'')');
+    ExecuteSQL(
+      'DELETE FROM Sales WHERE SaleNumber LIKE ''SALE202505%'' ' +
+      'OR SaleNumber LIKE ''SALE202506%''');
+    ExecuteSQL('DELETE FROM Products WHERE ProductCode LIKE ''DEMO%''');
+    ExecuteSQL('DELETE FROM SyncMetadata WHERE MetaKey = ''DemoDataVersion''');
+  except
+  end;
+end;
+
+function TDMDatabase.LoadDemoData(const AReload: Boolean): Boolean;
+begin
+  Result := False;
+  if not FDConnection.Connected then
+    Exit;
+  if FDatabaseType <> dtSQLite then
+    Exit;
+
+  if IsDemoDataLoaded and not AReload then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  if AReload then
+    ClearDemoData;
+
+  Result := RunSQLScriptFromFile('demo_data_sqlite.sql');
 end;
 
 end.
