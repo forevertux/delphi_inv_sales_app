@@ -18,7 +18,8 @@ const
   PAYMENT_CARD = 'Card';
   PAYMENT_MOBILE = 'Mobile';
   PAYMENT_BANK = 'Bank Transfer';
-  PAYMENT_PAID = 'Paid';
+
+  PAYMENT_PAID = 'Paid';
   PAYMENT_PENDING = 'Pending';
   PAYMENT_PARTIAL = 'Partial';
   PAYMENT_CANCELLED = 'Cancelled';
