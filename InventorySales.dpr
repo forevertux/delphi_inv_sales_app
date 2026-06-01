@@ -16,6 +16,7 @@ uses
   InventoryForm in 'src\Forms\InventoryForm.pas' {frmInventory},
   SalesForm in 'src\Forms\SalesForm.pas' {frmSales},
   ReportsForm in 'src\Forms\ReportsForm.pas' {frmReports},
+  UsersForm in 'src\Forms\UsersForm.pas' {frmUsers},
   UserEntity in 'src\Entities\UserEntity.pas',
   ProductEntity in 'src\Entities\ProductEntity.pas',
   SaleEntity in 'src\Entities\SaleEntity.pas',

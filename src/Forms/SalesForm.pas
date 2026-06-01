@@ -95,7 +95,6 @@ procedure TfrmSales.FormCreate(Sender: TObject);
 begin
   FCurrentSale := TSale.Create;
   SetupGrid;
-  InitializeNewSale;
 
   edtProductSearch.TextPrompt := 'Search products...';
   edtQuantity.TextPrompt := 'Qty';
@@ -111,6 +110,7 @@ begin
   cmbPaymentMethod.Items.Add('Card');
   cmbPaymentMethod.Items.Add('Mobile');
   cmbPaymentMethod.ItemIndex := 0;
+  InitializeNewSale;
   LoadProducts('');
   UpdateTotals;
 end;
@@ -201,11 +201,11 @@ begin
   ClearProducts;
   lstProducts.Clear;
 
-  if Trim(SearchText) = '' then
-    Exit;
-
   try
-    FProducts := GProductService.SearchProducts(SearchText);
+    if Trim(SearchText) = '' then
+      FProducts := GProductService.GetAllProducts
+    else
+      FProducts := GProductService.SearchProducts(SearchText);
 
     for I := 0 to Length(FProducts) - 1 do
     begin

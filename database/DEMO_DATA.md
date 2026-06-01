@@ -2,8 +2,8 @@
 
 ## What gets loaded
 
-- **2 branches** (Bucharest, Cluj)
-- **6 categories** (Electronics, Clothing, Food, Office, Home, General)
+- **2 branches** (New York, San Francisco)
+- **6 categories** (Electronics, Clothing, Food, Office, Home, General) — all labels in English
 - **4 users** (see passwords below)
 - **20 products** (`DEMO001` … `DEMO020`) with varied stock (including low/out of stock)
 - **8 sample sales** with line items (for Reports / Dashboard)

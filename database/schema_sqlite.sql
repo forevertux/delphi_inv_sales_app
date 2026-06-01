@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS SyncMetadata (
 
 -- Insert default data
 INSERT OR IGNORE INTO Branches (BranchID, BranchCode, BranchName, City, Country)
-VALUES (1, 'MAIN', 'Main Branch', 'Bucharest', 'Romania');
+VALUES (1, 'MAIN', 'Head Office', 'New York', 'USA');
 
 INSERT OR IGNORE INTO Categories (CategoryID, CategoryCode, CategoryName)
 VALUES (1, 'GEN', 'General');

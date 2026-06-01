@@ -748,6 +748,9 @@ begin
       'DELETE FROM Sales WHERE SaleNumber LIKE ''SALE202505%'' ' +
       'OR SaleNumber LIKE ''SALE202506%''');
     ExecuteSQL('DELETE FROM Products WHERE ProductCode LIKE ''DEMO%''');
+    ExecuteSQL('DELETE FROM Users WHERE UserID > 1');
+    ExecuteSQL('DELETE FROM Categories WHERE CategoryID > 1');
+    ExecuteSQL('DELETE FROM Branches WHERE BranchID > 1');
     ExecuteSQL('DELETE FROM SyncMetadata WHERE MetaKey = ''DemoDataVersion''');
   except
   end;

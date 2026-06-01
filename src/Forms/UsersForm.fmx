@@ -1,0 +1,63 @@
+object frmUsers: TfrmUsers
+  Align = Client
+  Size.Width = 900.000000000000000000
+  Size.Height = 600.000000000000000000
+  Size.PlatformDefault = False
+  object LayoutTop: TLayout
+    Align = Top
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 10.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 90.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object lblTitle: TLabel
+      Align = Top
+      StyledSettings = [Family]
+      Margins.Bottom = 10.000000000000000000
+      Size.Width = 880.000000000000000000
+      Size.Height = 30.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.Font.StyleExt = {00070000000000000004000000}
+      Text = 'User Management'
+      TabOrder = 0
+    end
+    object btnRefresh: TButton
+      Align = Top
+      Margins.Top = 40.000000000000000000
+      Position.Y = 40.000000000000000000
+      Size.Width = 150.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Refresh'
+      TextSettings.Trimming = None
+      OnClick = btnRefreshClick
+    end
+  end
+  object LayoutContent: TLayout
+    Align = Client
+    Padding.Left = 10.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 10.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 510.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object GridUsers: TStringGrid
+      Align = Client
+      CanFocus = True
+      ClipChildren = True
+      Size.Width = 880.000000000000000000
+      Size.Height = 500.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      RowCount = 0
+      Viewport.Width = 876.000000000000000000
+      Viewport.Height = 475.000000000000000000
+    end
+  end
+end

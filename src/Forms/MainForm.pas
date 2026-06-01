@@ -21,6 +21,7 @@ type
     TabReports: TTabItem;
     LayoutReportsHost: TLayout;
     TabUsers: TTabItem;
+    LayoutUsersHost: TLayout;
     RectTopBar: TRectangle;
     lblUserInfo: TLabel;
     btnLogout: TButton;
@@ -60,6 +61,7 @@ type
     procedure EnsureInventoryForm;
     procedure EnsureSalesForm;
     procedure EnsureReportsForm;
+    procedure EnsureUsersForm;
     procedure ShowInventoryTab;
     procedure ShowSalesTab;
     procedure ShowReportsTab;
@@ -78,7 +80,7 @@ implementation
 
 uses
   AuthService, SalesService, ProductService, SyncService, LoginForm,
-  InventoryForm, SalesForm, ReportsForm, FMX.DialogService,
+  InventoryForm, SalesForm, ReportsForm, UsersForm, FMX.DialogService,
   SaleEntity, ProductEntity, Constants, DatabaseModule;
 
 { TfrmMain }
@@ -201,6 +203,7 @@ begin
     frmInventory := TfrmInventory.Create(LayoutInventoryHost);
     frmInventory.Parent := LayoutInventoryHost;
     frmInventory.Align := TAlignLayout.Client;
+    frmInventory.Visible := True;
   end;
   frmInventory.ActivateModule;
 end;
@@ -212,6 +215,7 @@ begin
     frmSales := TfrmSales.Create(LayoutSalesHost);
     frmSales.Parent := LayoutSalesHost;
     frmSales.Align := TAlignLayout.Client;
+    frmSales.Visible := True;
   end;
   frmSales.ActivateModule;
 end;
@@ -223,8 +227,21 @@ begin
     frmReports := TfrmReports.Create(LayoutReportsHost);
     frmReports.Parent := LayoutReportsHost;
     frmReports.Align := TAlignLayout.Client;
+    frmReports.Visible := True;
   end;
   frmReports.ActivateModule;
+end;
+
+procedure TfrmMain.EnsureUsersForm;
+begin
+  if not Assigned(frmUsers) then
+  begin
+    frmUsers := TfrmUsers.Create(LayoutUsersHost);
+    frmUsers.Parent := LayoutUsersHost;
+    frmUsers.Align := TAlignLayout.Client;
+    frmUsers.Visible := True;
+  end;
+  frmUsers.ActivateModule;
 end;
 
 procedure TfrmMain.ShowInventoryTab;
@@ -272,6 +289,12 @@ begin
     LoadDashboardData;
     if Assigned(frmInventory) then
       frmInventory.ActivateModule;
+    if Assigned(frmSales) then
+      frmSales.ActivateModule;
+    if Assigned(frmReports) then
+      frmReports.ActivateModule;
+    if Assigned(frmUsers) then
+      frmUsers.ActivateModule;
   end
   else
     ShowMessage('Could not load demo data. Copy database\demo_data_sqlite.sql next to the EXE.');
@@ -305,7 +328,9 @@ begin
   else if TabControl1.ActiveTab = TabSales then
     EnsureSalesForm
   else if TabControl1.ActiveTab = TabReports then
-    EnsureReportsForm;
+    EnsureReportsForm
+  else if TabControl1.ActiveTab = TabUsers then
+    EnsureUsersForm;
 end;
 
 procedure TfrmMain.OnLogoutDialogClose(const AResult: TModalResult);
