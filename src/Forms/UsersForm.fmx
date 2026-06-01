@@ -6,33 +6,88 @@ object frmUsers: TfrmUsers
   object LayoutTop: TLayout
     Align = Top
     Padding.Left = 10.000000000000000000
-    Padding.Top = 10.000000000000000000
+    Padding.Top = 8.000000000000000000
     Padding.Right = 10.000000000000000000
-    Padding.Bottom = 10.000000000000000000
+    Padding.Bottom = 8.000000000000000000
     Size.Width = 900.000000000000000000
-    Size.Height = 90.000000000000000000
+    Size.Height = 44.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
     object lblTitle: TLabel
-      Align = Top
+      Align = Client
       StyledSettings = [Family]
-      Margins.Bottom = 10.000000000000000000
       Size.Width = 880.000000000000000000
-      Size.Height = 30.000000000000000000
+      Size.Height = 28.000000000000000000
       Size.PlatformDefault = False
-      TextSettings.Font.Size = 20.000000000000000000
+      TextSettings.Font.Size = 18.000000000000000000
       TextSettings.Font.StyleExt = {00070000000000000004000000}
       Text = 'User Management'
       TabOrder = 0
     end
-    object btnRefresh: TButton
-      Align = Top
-      Margins.Top = 40.000000000000000000
-      Position.Y = 40.000000000000000000
-      Size.Width = 150.000000000000000000
-      Size.Height = 40.000000000000000000
+  end
+  object LayoutButtons: TLayout
+    Align = Bottom
+    Padding.Left = 10.000000000000000000
+    Padding.Top = 8.000000000000000000
+    Padding.Right = 10.000000000000000000
+    Padding.Bottom = 8.000000000000000000
+    Size.Width = 900.000000000000000000
+    Size.Height = 52.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object btnAdd: TButton
+      Align = Left
+      Margins.Right = 8.000000000000000000
+      Size.Width = 100.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Add User'
+      TextSettings.Trimming = None
+      OnClick = btnAddClick
+    end
+    object btnEdit: TButton
+      Align = Left
+      Margins.Right = 8.000000000000000000
+      Position.X = 108.000000000000000000
+      Size.Width = 100.000000000000000000
+      Size.Height = 36.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 1
+      Text = 'Edit'
+      TextSettings.Trimming = None
+      OnClick = btnEditClick
+    end
+    object btnDeactivate: TButton
+      Align = Left
+      Margins.Right = 8.000000000000000000
+      Position.X = 216.000000000000000000
+      Size.Width = 110.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Deactivate'
+      TextSettings.Trimming = None
+      OnClick = btnDeactivateClick
+    end
+    object btnResetPassword: TButton
+      Align = Left
+      Margins.Right = 8.000000000000000000
+      Position.X = 334.000000000000000000
+      Size.Width = 130.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Reset Password'
+      TextSettings.Trimming = None
+      OnClick = btnResetPasswordClick
+    end
+    object btnRefresh: TButton
+      Align = Right
+      Size.Width = 100.000000000000000000
+      Size.Height = 36.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
       Text = 'Refresh'
       TextSettings.Trimming = None
       OnClick = btnRefreshClick
@@ -44,20 +99,20 @@ object frmUsers: TfrmUsers
     Padding.Right = 10.000000000000000000
     Padding.Bottom = 10.000000000000000000
     Size.Width = 900.000000000000000000
-    Size.Height = 510.000000000000000000
+    Size.Height = 504.000000000000000000
     Size.PlatformDefault = False
-    TabOrder = 1
+    TabOrder = 2
     object GridUsers: TStringGrid
       Align = Client
       CanFocus = True
       ClipChildren = True
       Size.Width = 880.000000000000000000
-      Size.Height = 500.000000000000000000
+      Size.Height = 494.000000000000000000
       Size.PlatformDefault = False
       TabOrder = 0
       RowCount = 0
       Viewport.Width = 876.000000000000000000
-      Viewport.Height = 475.000000000000000000
+      Viewport.Height = 469.000000000000000000
     end
   end
 end
