@@ -1,14 +1,9 @@
 object frmInventory: TfrmInventory
-  Left = 0
-  Top = 0
-  Caption = 'Inventory Management'
-  ClientHeight = 600
-  ClientWidth = 900
-  FormFactor.Width = 320
-  FormFactor.Height = 480
-  FormFactor.Devices = [Desktop]
+  Align = Client
+  Size.Width = 900.000000000000000000
+  Size.Height = 600.000000000000000000
+  Size.PlatformDefault = False
   OnCreate = FormCreate
-  OnShow = FormShow
   OnDestroy = FormDestroy
   DesignerMasterStyle = 0
   object LayoutTop: TLayout
@@ -147,7 +142,6 @@ object frmInventory: TfrmInventory
       RowCount = 0
       Viewport.Width = 876.000000000000000000
       Viewport.Height = 395.000000000000000000
-      OnDblClick = GridProductsDblClick
     end
   end
 end
