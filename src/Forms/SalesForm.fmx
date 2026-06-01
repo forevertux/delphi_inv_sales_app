@@ -3,7 +3,6 @@ object frmSales: TfrmSales
   Size.Width = 900.000000000000000000
   Size.Height = 700.000000000000000000
   Size.PlatformDefault = False
-  DesignerMasterStyle = 0
   object LayoutTop: TLayout
     Align = Top
     Padding.Left = 10.000000000000000000
