@@ -93,7 +93,7 @@ begin
   if not Query.FieldByName('SKU').IsNull then
     Result.SKU := Query.FieldByName('SKU').AsString;
 
-  Result.IsActive := Query.FieldByName('IsActive').AsBoolean;
+  Result.IsActive := DMDatabase.ReadBoolField(Query.FieldByName('IsActive'));
 
   if not Query.FieldByName('CreatedBy').IsNull then
     Result.CreatedBy := Query.FieldByName('CreatedBy').AsInteger;
@@ -517,7 +517,7 @@ begin
 
     Query.ParamByName('Barcode').AsString := Product.Barcode;
     Query.ParamByName('SKU').AsString := Product.SKU;
-    Query.ParamByName('IsActive').AsBoolean := Product.IsActive;
+    DMDatabase.SetBoolParam(Query.ParamByName('IsActive'), Product.IsActive);
     Query.ParamByName('CreatedBy').AsInteger := GAuthService.CurrentUser.UserID;
     Query.ExecSQL;
 
@@ -629,7 +629,7 @@ begin
 
     Query.ParamByName('Barcode').AsString := Product.Barcode;
     Query.ParamByName('SKU').AsString := Product.SKU;
-    Query.ParamByName('IsActive').AsBoolean := Product.IsActive;
+    DMDatabase.SetBoolParam(Query.ParamByName('IsActive'), Product.IsActive);
     Query.ParamByName('ProductID').AsInteger := Product.ProductID;
     Query.ExecSQL;
 

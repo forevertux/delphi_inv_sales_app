@@ -2,8 +2,8 @@ object frmLogin: TfrmLogin
   Left = 0
   Top = 0
   Caption = 'Sales & Inventory - Login'
-  ClientHeight = 600
-  ClientWidth = 400
+  ClientHeight = 640
+  ClientWidth = 480
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -12,143 +12,219 @@ object frmLogin: TfrmLogin
   DesignerMasterStyle = 0
   object LayoutMain: TLayout
     Align = Client
-    Size.Width = 400.000000000000000000
-    Size.Height = 600.000000000000000000
+    Size.Width = 480.000000000000000000
+    Size.Height = 640.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    object LayoutCenter: TLayout
-      Align = Center
-      Size.Width = 350.000000000000000000
-      Size.Height = 450.000000000000000000
+    object RectPageBg: TRectangle
+      Align = Client
+      Fill.Color = xFF1565C0
+      Size.Width = 480.000000000000000000
+      Size.Height = 640.000000000000000000
       Size.PlatformDefault = False
-      TabOrder = 0
-      object RectBackground: TRectangle
-        Align = Client
-        Fill.Color = claWhite
-        Size.Width = 350.000000000000000000
-        Size.Height = 450.000000000000000000
+      Stroke.Kind = None
+      object LayoutCenter: TLayout
+        Align = Center
+        Size.Width = 400.000000000000000000
+        Size.Height = 520.000000000000000000
         Size.PlatformDefault = False
-        Stroke.Color = claLightgray
-        XRadius = 8.000000000000000000
-        YRadius = 8.000000000000000000
-        object lblTitle: TLabel
-          Align = Top
-          StyledSettings = [Family]
-          Margins.Left = 20.000000000000000000
-          Margins.Top = 30.000000000000000000
-          Margins.Right = 20.000000000000000000
-          Margins.Bottom = 10.000000000000000000
-          Position.X = 20.000000000000000000
-          Position.Y = 30.000000000000000000
-          Size.Width = 310.000000000000000000
-          Size.Height = 40.000000000000000000
+        TabOrder = 0
+        object RectCardShadow: TRectangle
+          Align = Client
+          Fill.Color = x33000000
+          Margins.Left = 6.000000000000000000
+          Margins.Top = 8.000000000000000000
+          Size.Width = 394.000000000000000000
+          Size.Height = 512.000000000000000000
           Size.PlatformDefault = False
-          TextSettings.Font.Size = 24.000000000000000000
-          TextSettings.Font.StyleExt = {00070000000000000004000000}
-          TextSettings.FontColor = xFF1976D2
-          TextSettings.HorzAlign = Center
-          Text = 'Sales &amp; Inventory'
-          TabOrder = 0
+          Stroke.Kind = None
+          XRadius = 14.000000000000000000
+          YRadius = 14.000000000000000000
         end
-        object edtUsername: TEdit
-          Touch.InteractiveGestures = [LongTap, DoubleTap]
-          Align = Top
-          TabOrder = 1
-          Margins.Left = 30.000000000000000000
-          Margins.Top = 100.000000000000000000
-          Margins.Right = 30.000000000000000000
-          Margins.Bottom = 10.000000000000000000
-          Position.X = 30.000000000000000000
-          Position.Y = 100.000000000000000000
-          Size.Width = 290.000000000000000000
-          Size.Height = 44.000000000000000000
+        object RectCard: TRectangle
+          Align = Client
+          Fill.Color = claWhite
+          Size.Width = 400.000000000000000000
+          Size.Height = 520.000000000000000000
           Size.PlatformDefault = False
-          TextPrompt = 'Username'
-          StyledSettings = [Family, FontColor]
-          TextSettings.Font.Size = 16.000000000000000000
-        end
-        object edtPassword: TEdit
-          Touch.InteractiveGestures = [LongTap, DoubleTap]
-          Align = Top
-          TabOrder = 2
-          Password = True
-          Margins.Left = 30.000000000000000000
-          Margins.Top = 164.000000000000000000
-          Margins.Right = 30.000000000000000000
-          Margins.Bottom = 10.000000000000000000
-          Position.X = 30.000000000000000000
-          Position.Y = 164.000000000000000000
-          Size.Width = 290.000000000000000000
-          Size.Height = 44.000000000000000000
-          Size.PlatformDefault = False
-          TextPrompt = 'Password'
-          StyledSettings = [Family, FontColor]
-          TextSettings.Font.Size = 16.000000000000000000
-          OnKeyDown = edtPasswordKeyDown
-        end
-        object chkRememberMe: TCheckBox
-          Align = Top
-          Margins.Left = 30.000000000000000000
-          Margins.Top = 228.000000000000000000
-          Margins.Right = 30.000000000000000000
-          Margins.Bottom = 5.000000000000000000
-          Position.X = 30.000000000000000000
-          Position.Y = 228.000000000000000000
-          Size.Width = 290.000000000000000000
-          Size.Height = 25.000000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 3
-          Text = 'Remember Me'
-        end
-        object lblError: TLabel
-          Align = Top
-          StyledSettings = [Family, Style]
-          Margins.Left = 30.000000000000000000
-          Margins.Top = 268.000000000000000000
-          Margins.Right = 30.000000000000000000
-          Margins.Bottom = 10.000000000000000000
-          Position.X = 30.000000000000000000
-          Position.Y = 268.000000000000000000
-          Size.Width = 290.000000000000000000
-          Size.Height = 35.000000000000000000
-          Size.PlatformDefault = False
-          TextSettings.Font.Size = 14.000000000000000000
-          TextSettings.FontColor = claRed
-          TextSettings.HorzAlign = Center
-          TextSettings.WordWrap = True
-          Visible = False
-          TabOrder = 4
-        end
-        object LayoutButtons: TLayout
-          Align = Top
-          Margins.Left = 30.000000000000000000
-          Margins.Top = 323.000000000000000000
-          Margins.Right = 30.000000000000000000
-          Margins.Bottom = 10.000000000000000000
-          Position.X = 30.000000000000000000
-          Position.Y = 323.000000000000000000
-          Size.Width = 290.000000000000000000
-          Size.Height = 50.000000000000000000
-          Size.PlatformDefault = False
-          TabOrder = 5
-          object btnLogin: TButton
+          Stroke.Color = xFFE0E0E0
+          Stroke.Thickness = 1.000000000000000000
+          XRadius = 14.000000000000000000
+          YRadius = 14.000000000000000000
+          object RectHeader: TRectangle
+            Align = Top
+            Fill.Color = xFF1976D2
+            Size.Width = 400.000000000000000000
+            Size.Height = 130.000000000000000000
+            Size.PlatformDefault = False
+            Stroke.Kind = None
+            XRadius = 14.000000000000000000
+            YRadius = 0.000000000000000000
+            object lblTitle: TLabel
+              Align = Top
+              StyledSettings = [Family, Style]
+              Margins.Left = 24.000000000000000000
+              Margins.Top = 28.000000000000000000
+              Margins.Right = 24.000000000000000000
+              Position.X = 24.000000000000000000
+              Position.Y = 28.000000000000000000
+              Size.Width = 352.000000000000000000
+              Size.Height = 36.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 26.000000000000000000
+              TextSettings.Font.StyleExt = {00070000000000000004000000}
+              TextSettings.FontColor = claWhite
+              TextSettings.HorzAlign = Center
+              TextSettings.Trimming = None
+              Text = 'Sales & Inventory'
+              TabOrder = 0
+            end
+            object lblSubtitle: TLabel
+              Align = Top
+              StyledSettings = [Family, Style]
+              Margins.Left = 24.000000000000000000
+              Margins.Top = 4.000000000000000000
+              Margins.Right = 24.000000000000000000
+              Margins.Bottom = 20.000000000000000000
+              Position.X = 24.000000000000000000
+              Position.Y = 68.000000000000000000
+              Size.Width = 352.000000000000000000
+              Size.Height = 28.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 14.000000000000000000
+              TextSettings.FontColor = xFFE3F2FD
+              TextSettings.HorzAlign = Center
+              TextSettings.Trimming = None
+              Text = 'Sign in to your account'
+              TabOrder = 1
+            end
+          end
+          object LayoutForm: TLayout
             Align = Client
-            StyledSettings = [Family]
-            Size.Width = 290.000000000000000000
-            Size.Height = 50.000000000000000000
+            Padding.Left = 32.000000000000000000
+            Padding.Top = 28.000000000000000000
+            Padding.Right = 32.000000000000000000
+            Padding.Bottom = 28.000000000000000000
+            Size.Width = 400.000000000000000000
+            Size.Height = 390.000000000000000000
             Size.PlatformDefault = False
             TabOrder = 0
-            Text = 'Login'
-            TextSettings.Font.Size = 18.000000000000000000
-            TextSettings.Font.StyleExt = {00070000000000000004000000}
-            OnClick = btnLoginClick
+            object lblUsernameLabel: TLabel
+              Align = Top
+              StyledSettings = [Family, Style]
+              Margins.Bottom = 6.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 20.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 13.000000000000000000
+              TextSettings.FontColor = xFF616161
+              Text = 'Username'
+              TabOrder = 0
+            end
+            object edtUsername: TEdit
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Top
+              TabOrder = 1
+              Margins.Bottom = 18.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 44.000000000000000000
+              Size.PlatformDefault = False
+              StyledSettings = [Family, FontColor]
+              TextSettings.Font.Size = 16.000000000000000000
+              TextPrompt = 'Enter your username'
+            end
+            object lblPasswordLabel: TLabel
+              Align = Top
+              StyledSettings = [Family, Style]
+              Margins.Bottom = 6.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 20.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 13.000000000000000000
+              TextSettings.FontColor = xFF616161
+              Text = 'Password'
+              TabOrder = 2
+            end
+            object edtPassword: TEdit
+              Touch.InteractiveGestures = [LongTap, DoubleTap]
+              Align = Top
+              TabOrder = 3
+              Password = True
+              Margins.Bottom = 12.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 44.000000000000000000
+              Size.PlatformDefault = False
+              StyledSettings = [Family, FontColor]
+              TextSettings.Font.Size = 16.000000000000000000
+              TextPrompt = 'Enter your password'
+              OnKeyDown = edtPasswordKeyDown
+            end
+            object chkRememberMe: TCheckBox
+              Align = Top
+              Margins.Bottom = 8.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 28.000000000000000000
+              Size.PlatformDefault = False
+              TabOrder = 4
+              Text = 'Remember me'
+              TextSettings.Font.Size = 14.000000000000000000
+            end
+            object lblError: TLabel
+              Align = Top
+              StyledSettings = [Family, Style]
+              Margins.Bottom = 12.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 40.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 13.000000000000000000
+              TextSettings.FontColor = xFFD32F2F
+              TextSettings.HorzAlign = Center
+              TextSettings.WordWrap = True
+              TextSettings.Trimming = None
+              Visible = False
+              TabOrder = 5
+            end
+            object RectLoginBtn: TRectangle
+              Align = Top
+              Fill.Color = xFF1976D2
+              Margins.Top = 4.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 48.000000000000000000
+              Size.PlatformDefault = False
+              Stroke.Kind = None
+              XRadius = 8.000000000000000000
+              YRadius = 8.000000000000000000
+              object btnLogin: TButton
+                Align = Client
+                StyledSettings = [Family, FontColor]
+                Size.Width = 336.000000000000000000
+                Size.Height = 48.000000000000000000
+                Size.PlatformDefault = False
+                TabOrder = 0
+                Text = 'Sign In'
+                TextSettings.Font.Size = 17.000000000000000000
+                TextSettings.Font.StyleExt = {00070000000000000004000000}
+                TextSettings.FontColor = claWhite
+                TextSettings.Trimming = None
+                OnClick = btnLoginClick
+              end
+            end
+            object lblFooter: TLabel
+              Align = Bottom
+              StyledSettings = [Family, Style]
+              Margins.Top = 16.000000000000000000
+              Size.Width = 336.000000000000000000
+              Size.Height = 22.000000000000000000
+              Size.PlatformDefault = False
+              TextSettings.Font.Size = 11.000000000000000000
+              TextSettings.FontColor = xFF9E9E9E
+              TextSettings.HorzAlign = Center
+              Text = 'Inventory & Sales Management'
+              TabOrder = 6
+            end
           end
         end
       end
     end
-  end
-  object StyleBook1: TStyleBook
-    Left = 24
-    Top = 24
   end
 end

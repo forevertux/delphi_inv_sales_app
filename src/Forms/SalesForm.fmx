@@ -1,14 +1,9 @@
 object frmSales: TfrmSales
-  Left = 0
-  Top = 0
-  Caption = 'Sales Transaction'
-  ClientHeight = 700
-  ClientWidth = 900
-  FormFactor.Width = 320
-  FormFactor.Height = 480
-  FormFactor.Devices = [Desktop]
+  Align = Client
+  Size.Width = 900.000000000000000000
+  Size.Height = 700.000000000000000000
+  Size.PlatformDefault = False
   OnCreate = FormCreate
-  OnShow = FormShow
   OnDestroy = FormDestroy
   DesignerMasterStyle = 0
   object LayoutTop: TLayout

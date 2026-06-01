@@ -10,16 +10,23 @@ uses
 type
   TfrmLogin = class(TForm)
     LayoutMain: TLayout;
+    RectPageBg: TRectangle;
     LayoutCenter: TLayout;
-    RectBackground: TRectangle;
+    RectCardShadow: TRectangle;
+    RectCard: TRectangle;
+    RectHeader: TRectangle;
     lblTitle: TLabel;
+    lblSubtitle: TLabel;
+    LayoutForm: TLayout;
+    lblUsernameLabel: TLabel;
     edtUsername: TEdit;
+    lblPasswordLabel: TLabel;
     edtPassword: TEdit;
-    btnLogin: TButton;
     chkRememberMe: TCheckBox;
     lblError: TLabel;
-    LayoutButtons: TLayout;
-    StyleBook1: TStyleBook;
+    RectLoginBtn: TRectangle;
+    btnLogin: TButton;
+    lblFooter: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure btnLoginClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -50,22 +57,21 @@ uses
 
 procedure TfrmLogin.FormCreate(Sender: TObject);
 begin
-  // Center the form
   {$IFDEF MSWINDOWS}
   Position := TFormPosition.ScreenCenter;
+  BorderStyle := TFmxFormBorderStyle.Single;
   {$ENDIF}
 
-  // Set initial properties
   lblError.Text := '';
   lblError.Visible := False;
   edtPassword.Password := True;
   edtPassword.KillFocusByReturn := False;
 
-  // Configure edit controls
-  edtUsername.TextPrompt := 'Enter username';
-  edtPassword.TextPrompt := 'Enter password';
+  btnLogin.StyledSettings := btnLogin.StyledSettings - [TStyledSetting.Style];
+  btnLogin.TextSettings.FontColor := TAlphaColorRec.White;
+  RectLoginBtn.OnClick := btnLoginClick;
+  RectLoginBtn.Cursor := crHandPoint;
 
-  // Load remembered username if exists
   LoadRememberedUser;
 end;
 
@@ -174,6 +180,7 @@ begin
 
   // Disable button to prevent multiple clicks
   btnLogin.Enabled := False;
+  RectLoginBtn.Opacity := 0.85;
   try
     ClearErrorMessage;
 
@@ -208,6 +215,7 @@ begin
     end;
   finally
     btnLogin.Enabled := True;
+    RectLoginBtn.Opacity := 1;
   end;
 end;
 

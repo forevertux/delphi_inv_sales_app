@@ -95,7 +95,7 @@ begin
     Result.Notes := Query.FieldByName('Notes').AsString;
 
   if not Query.FieldByName('IsSynced').IsNull then
-    Result.IsSynced := Query.FieldByName('IsSynced').AsBoolean;
+    Result.IsSynced := DMDatabase.ReadBoolField(Query.FieldByName('IsSynced'));
 
   if not Query.FieldByName('CreatedAt').IsNull then
     Result.CreatedAt := Query.FieldByName('CreatedAt').AsDateTime;
@@ -336,7 +336,7 @@ begin
       QuerySale.ParamByName('PaymentMethod').AsString := Sale.PaymentMethod;
       QuerySale.ParamByName('PaymentStatus').AsString := Sale.PaymentStatus;
       QuerySale.ParamByName('Notes').AsString := Sale.Notes;
-      QuerySale.ParamByName('IsSynced').AsBoolean := Sale.IsSynced;
+      DMDatabase.SetBoolParam(QuerySale.ParamByName('IsSynced'), Sale.IsSynced);
       QuerySale.ExecSQL;
 
       // Get the last inserted SaleID

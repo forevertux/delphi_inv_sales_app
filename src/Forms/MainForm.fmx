@@ -32,11 +32,12 @@ object frmMain: TfrmMain
         Margins.Bottom = 10.000000000000000000
         Position.X = 20.000000000000000000
         Position.Y = 10.000000000000000000
-        Size.Width = 300.000000000000000000
+        Size.Width = 400.000000000000000000
         Size.Height = 40.000000000000000000
         Size.PlatformDefault = False
         TextSettings.Font.Size = 16.000000000000000000
         TextSettings.FontColor = claWhite
+        TextSettings.Trimming = None
         TextSettings.VertAlign = Center
         Text = 'User: '
         TabOrder = 0
@@ -129,7 +130,7 @@ object frmMain: TfrmMain
             Position.X = 20.000000000000000000
             Position.Y = 20.000000000000000000
             Size.Width = 960.000000000000000000
-            Size.Height = 100.000000000000000000
+            Size.Height = 120.000000000000000000
             Size.PlatformDefault = False
             Stroke.Color = xFF388E3C
             XRadius = 8.000000000000000000
@@ -152,17 +153,18 @@ object frmMain: TfrmMain
               TabOrder = 0
             end
             object lblTotalSalesValue: TLabel
-              Align = Client
+              Align = Bottom
               StyledSettings = [Family, Style]
               Margins.Left = 20.000000000000000000
-              Margins.Top = 40.000000000000000000
               Margins.Right = 20.000000000000000000
-              Margins.Bottom = 15.000000000000000000
+              Margins.Bottom = 12.000000000000000000
               Size.Width = 920.000000000000000000
-              Size.Height = 45.000000000000000000
+              Size.Height = 55.000000000000000000
               Size.PlatformDefault = False
               TextSettings.Font.Size = 28.000000000000000000
               TextSettings.FontColor = claWhite
+              TextSettings.Trimming = None
+              TextSettings.VertAlign = Center
               Text = '0 transactions'
               TabOrder = 1
             end
@@ -174,7 +176,7 @@ object frmMain: TfrmMain
             Position.X = 20.000000000000000000
             Position.Y = 135.000000000000000000
             Size.Width = 960.000000000000000000
-            Size.Height = 100.000000000000000000
+            Size.Height = 120.000000000000000000
             Size.PlatformDefault = False
             Stroke.Color = xFF1976D2
             XRadius = 8.000000000000000000
@@ -197,17 +199,18 @@ object frmMain: TfrmMain
               TabOrder = 0
             end
             object lblTodaySalesValue: TLabel
-              Align = Client
+              Align = Bottom
               StyledSettings = [Family, Style]
               Margins.Left = 20.000000000000000000
-              Margins.Top = 40.000000000000000000
               Margins.Right = 20.000000000000000000
-              Margins.Bottom = 15.000000000000000000
+              Margins.Bottom = 12.000000000000000000
               Size.Width = 920.000000000000000000
-              Size.Height = 45.000000000000000000
+              Size.Height = 55.000000000000000000
               Size.PlatformDefault = False
               TextSettings.Font.Size = 28.000000000000000000
               TextSettings.FontColor = claWhite
+              TextSettings.Trimming = None
+              TextSettings.VertAlign = Center
               Text = '$0.00'
               TabOrder = 1
             end
@@ -219,7 +222,7 @@ object frmMain: TfrmMain
             Position.X = 20.000000000000000000
             Position.Y = 250.000000000000000000
             Size.Width = 960.000000000000000000
-            Size.Height = 100.000000000000000000
+            Size.Height = 120.000000000000000000
             Size.PlatformDefault = False
             Stroke.Color = xFFF57C00
             XRadius = 8.000000000000000000
@@ -242,17 +245,18 @@ object frmMain: TfrmMain
               TabOrder = 0
             end
             object lblLowStockValue: TLabel
-              Align = Client
+              Align = Bottom
               StyledSettings = [Family, Style]
               Margins.Left = 20.000000000000000000
-              Margins.Top = 40.000000000000000000
               Margins.Right = 20.000000000000000000
-              Margins.Bottom = 15.000000000000000000
+              Margins.Bottom = 12.000000000000000000
               Size.Width = 920.000000000000000000
-              Size.Height = 45.000000000000000000
+              Size.Height = 55.000000000000000000
               Size.PlatformDefault = False
               TextSettings.Font.Size = 28.000000000000000000
               TextSettings.FontColor = claWhite
+              TextSettings.Trimming = None
+              TextSettings.VertAlign = Center
               Text = '0 items'
               TabOrder = 1
             end
@@ -335,6 +339,13 @@ object frmMain: TfrmMain
         Text = 'Inventory'
         ExplicitSize.cx = 50.000000000000000000
         ExplicitSize.cy = 50.000000000000000000
+        object LayoutInventoryHost: TLayout
+          Align = Client
+          Size.Width = 1000.000000000000000000
+          Size.Height = 611.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+        end
       end
       object TabSales: TTabItem
         CustomIcon = <
@@ -349,6 +360,13 @@ object frmMain: TfrmMain
         Text = 'Sales'
         ExplicitSize.cx = 50.000000000000000000
         ExplicitSize.cy = 50.000000000000000000
+        object LayoutSalesHost: TLayout
+          Align = Client
+          Size.Width = 1000.000000000000000000
+          Size.Height = 611.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+        end
       end
       object TabReports: TTabItem
         CustomIcon = <
@@ -363,6 +381,13 @@ object frmMain: TfrmMain
         Text = 'Reports'
         ExplicitSize.cx = 50.000000000000000000
         ExplicitSize.cy = 50.000000000000000000
+        object LayoutReportsHost: TLayout
+          Align = Client
+          Size.Width = 1000.000000000000000000
+          Size.Height = 611.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+        end
       end
       object TabUsers: TTabItem
         CustomIcon = <

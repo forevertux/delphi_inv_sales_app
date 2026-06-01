@@ -9,7 +9,7 @@ uses
   FMX.ScrollBox, FMX.Edit, FMX.ListBox, SaleEntity, ProductEntity;
 
 type
-  TfrmSales = class(TForm)
+  TfrmSales = class(TFrame)
     LayoutTop: TLayout;
     LayoutContent: TLayout;
     LayoutBottom: TLayout;
@@ -60,7 +60,7 @@ type
     function GetCartQuantityForProduct(ProductID: Integer): Integer;
     function FormatCurrency(const Value: Double): string;
   public
-    { Public declarations }
+    procedure ActivateModule;
   end;
 
 var
@@ -88,16 +88,20 @@ begin
   edtCustomerPhone.TextPrompt := 'Phone (Optional)';
 end;
 
-procedure TfrmSales.FormShow(Sender: TObject);
+procedure TfrmSales.ActivateModule;
 begin
-  // Load payment methods
   cmbPaymentMethod.Clear;
   cmbPaymentMethod.Items.Add('Cash');
   cmbPaymentMethod.Items.Add('Card');
   cmbPaymentMethod.Items.Add('Mobile');
   cmbPaymentMethod.ItemIndex := 0;
-
+  LoadProducts('');
   UpdateTotals;
+end;
+
+procedure TfrmSales.FormShow(Sender: TObject);
+begin
+  ActivateModule;
 end;
 
 procedure TfrmSales.FormDestroy(Sender: TObject);

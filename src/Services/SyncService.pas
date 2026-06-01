@@ -60,6 +60,7 @@ type
 
     // Configuration
     procedure SetServerURL(const URL: string);
+    procedure EnsureInitialized;
 
     property DeviceID: string read FDeviceID;
     property LastError: string read FLastError;
@@ -88,14 +89,24 @@ begin
   inherited Create;
   FSyncStatus := ssNone;
   FLastSyncTime := 0;
-  FDeviceID := GetDeviceID;
+  FDeviceID := '';
   FServerURL := '';
   FLastError := '';
+end;
 
-  // Ensure SyncLog table exists
+procedure TSyncService.EnsureInitialized;
+begin
+  if FDeviceID <> '' then
+    Exit;
+
+  if not Assigned(DMDatabase) or not DMDatabase.IsConnected then
+  begin
+    FDeviceID := TGuid.NewGuid.ToString;
+    Exit;
+  end;
+
+  FDeviceID := GetDeviceID;
   EnsureSyncLogTable;
-
-  // Load last sync time
   FLastSyncTime := StrToDateTimeDef(GetSyncMetadata('LastSyncTime', ''), 0);
 end;
 
@@ -153,7 +164,7 @@ var
   Query: TFDQuery;
   CreateSyncLogSQL: string;
 begin
-  if not DMDatabase.IsConnected then
+  if not Assigned(DMDatabase) or not DMDatabase.IsConnected then
     Exit;
 
   try
@@ -449,6 +460,9 @@ var
   Query: TFDQuery;
   SQL: string;
 begin
+  if not Assigned(DMDatabase) or not DMDatabase.IsConnected then
+    Exit;
+
   try
     Query := DMDatabase.qryGeneral;
 
@@ -484,6 +498,9 @@ var
   SQL: string;
 begin
   Result := DefaultValue;
+
+  if not Assigned(DMDatabase) or not DMDatabase.IsConnected then
+    Exit;
 
   try
     Query := DMDatabase.qryGeneral;

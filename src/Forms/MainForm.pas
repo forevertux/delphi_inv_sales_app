@@ -15,8 +15,11 @@ type
     TabControl1: TTabControl;
     TabDashboard: TTabItem;
     TabInventory: TTabItem;
+    LayoutInventoryHost: TLayout;
     TabSales: TTabItem;
+    LayoutSalesHost: TLayout;
     TabReports: TTabItem;
+    LayoutReportsHost: TLayout;
     TabUsers: TTabItem;
     RectTopBar: TRectangle;
     lblUserInfo: TLabel;
@@ -51,8 +54,13 @@ type
     procedure LoadDashboardData;
     procedure UpdateSyncStatus;
     procedure SetRoleBasedVisibility;
-    procedure EnsureChildForm(var AForm: TForm; AFormClass: TFormClass; AParent: TFmxObject);
-    procedure ShowModuleTab(ATab: TTabItem; var AForm: TForm; AFormClass: TFormClass);
+    procedure EnsureInventoryForm;
+    procedure EnsureSalesForm;
+    procedure EnsureReportsForm;
+    procedure ShowInventoryTab;
+    procedure ShowSalesTab;
+    procedure ShowReportsTab;
+    procedure OnLogoutDialogClose(const AResult: TModalResult);
     function FormatCurrency(const Value: Double): string;
   public
     { Public declarations }
@@ -181,38 +189,70 @@ begin
   UpdateSyncStatus;
 end;
 
-procedure TfrmMain.EnsureChildForm(var AForm: TForm; AFormClass: TFormClass; AParent: TFmxObject);
+procedure TfrmMain.EnsureInventoryForm;
 begin
-  if not Assigned(AForm) then
+  if not Assigned(frmInventory) then
   begin
-    AForm := AFormClass.Create(Self);
-    AForm.Parent := AParent;
-    AForm.Align := TAlignLayout.Client;
-    AForm.BorderStyle := TFmxFormBorderStyle.None;
+    frmInventory := TfrmInventory.Create(LayoutInventoryHost);
+    frmInventory.Parent := LayoutInventoryHost;
+    frmInventory.Align := TAlignLayout.Client;
   end;
-  AForm.Visible := True;
-  AForm.BringToFront;
+  frmInventory.ActivateModule;
 end;
 
-procedure TfrmMain.ShowModuleTab(ATab: TTabItem; var AForm: TForm; AFormClass: TFormClass);
+procedure TfrmMain.EnsureSalesForm;
 begin
-  TabControl1.ActiveTab := ATab;
-  EnsureChildForm(AForm, AFormClass, ATab);
+  if not Assigned(frmSales) then
+  begin
+    frmSales := TfrmSales.Create(LayoutSalesHost);
+    frmSales.Parent := LayoutSalesHost;
+    frmSales.Align := TAlignLayout.Client;
+  end;
+  frmSales.ActivateModule;
+end;
+
+procedure TfrmMain.EnsureReportsForm;
+begin
+  if not Assigned(frmReports) then
+  begin
+    frmReports := TfrmReports.Create(LayoutReportsHost);
+    frmReports.Parent := LayoutReportsHost;
+    frmReports.Align := TAlignLayout.Client;
+  end;
+  frmReports.ActivateModule;
+end;
+
+procedure TfrmMain.ShowInventoryTab;
+begin
+  TabControl1.ActiveTab := TabInventory;
+  EnsureInventoryForm;
+end;
+
+procedure TfrmMain.ShowSalesTab;
+begin
+  TabControl1.ActiveTab := TabSales;
+  EnsureSalesForm;
+end;
+
+procedure TfrmMain.ShowReportsTab;
+begin
+  TabControl1.ActiveTab := TabReports;
+  EnsureReportsForm;
 end;
 
 procedure TfrmMain.btnOpenInventoryClick(Sender: TObject);
 begin
-  ShowModuleTab(TabInventory, frmInventory, TfrmInventory);
+  ShowInventoryTab;
 end;
 
 procedure TfrmMain.btnOpenSalesClick(Sender: TObject);
 begin
-  ShowModuleTab(TabSales, frmSales, TfrmSales);
+  ShowSalesTab;
 end;
 
 procedure TfrmMain.btnOpenReportsClick(Sender: TObject);
 begin
-  ShowModuleTab(TabReports, frmReports, TfrmReports);
+  ShowReportsTab;
 end;
 
 procedure TfrmMain.TabControl1Change(Sender: TObject);
@@ -220,33 +260,32 @@ begin
   if TabControl1.ActiveTab = TabDashboard then
     LoadDashboardData
   else if TabControl1.ActiveTab = TabInventory then
-    ShowModuleTab(TabInventory, frmInventory, TfrmInventory)
+    EnsureInventoryForm
   else if TabControl1.ActiveTab = TabSales then
-    ShowModuleTab(TabSales, frmSales, TfrmSales)
+    EnsureSalesForm
   else if TabControl1.ActiveTab = TabReports then
-    ShowModuleTab(TabReports, frmReports, TfrmReports);
+    EnsureReportsForm;
+end;
+
+procedure TfrmMain.OnLogoutDialogClose(const AResult: TModalResult);
+begin
+  if AResult <> mrYes then
+    Exit;
+
+  GAuthService.Logout;
+
+  if not Assigned(frmLogin) then
+    Application.CreateForm(TfrmLogin, frmLogin);
+
+  frmLogin.Show;
+  Close;
 end;
 
 procedure TfrmMain.btnLogoutClick(Sender: TObject);
 begin
   TDialogService.MessageDialog('Are you sure you want to logout?',
     TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
-    TMsgDlgBtn.mbNo, 0,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then
-      begin
-        // Logout
-        GAuthService.Logout;
-
-        // Show login form
-        if not Assigned(frmLogin) then
-          Application.CreateForm(TfrmLogin, frmLogin);
-
-        frmLogin.Show;
-        Self.Close;
-      end;
-    end);
+    TMsgDlgBtn.mbNo, 0, OnLogoutDialogClose);
 end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var Action: TCloseAction);

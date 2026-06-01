@@ -68,7 +68,7 @@ begin
   Result.Phone := Query.FieldByName('Phone').AsString;
   Result.RoleID := Query.FieldByName('RoleID').AsInteger;
   Result.BranchID := Query.FieldByName('BranchID').AsInteger;
-  Result.IsActive := Query.FieldByName('IsActive').AsBoolean;
+  Result.IsActive := DMDatabase.ReadBoolField(Query.FieldByName('IsActive'));
 
   if not Query.FieldByName('LastLogin').IsNull then
     Result.LastLogin := Query.FieldByName('LastLogin').AsDateTime;
@@ -311,7 +311,7 @@ begin
       else
         Query.ParamByName('BranchID').Clear;
 
-      Query.ParamByName('IsActive').AsBoolean := User.IsActive;
+      DMDatabase.SetBoolParam(Query.ParamByName('IsActive'), User.IsActive);
       Query.ExecSQL;
       User.UserID := DMDatabase.GetLastInsertID;
       Result := User.UserID > 0;
@@ -372,7 +372,7 @@ begin
       else
         Query.ParamByName('BranchID').Clear;
 
-      Query.ParamByName('IsActive').AsBoolean := User.IsActive;
+      DMDatabase.SetBoolParam(Query.ParamByName('IsActive'), User.IsActive);
       Query.ParamByName('UserID').AsInteger := User.UserID;
       Query.ExecSQL;
       Result := Query.RowsAffected > 0;
