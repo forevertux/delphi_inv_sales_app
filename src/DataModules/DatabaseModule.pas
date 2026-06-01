@@ -87,6 +87,8 @@ type
     function ReadBoolField(Field: TField): Boolean;
     procedure SetBoolParam(Param: TFDParam; Value: Boolean);
     function IsDemoDataLoaded: Boolean;
+    function GetDemoDataVersion: string;
+    function NeedsDemoDataUpgrade: Boolean;
     function LoadDemoData(const AReload: Boolean = False): Boolean;
     property DatabaseType: TDatabaseType read FDatabaseType;
     property IsOfflineMode: Boolean read FIsOfflineMode;
@@ -740,20 +742,45 @@ begin
     Exit;
 
   try
-    ExecuteSQL(
-      'DELETE FROM SaleItems WHERE SaleID IN (' +
-      'SELECT SaleID FROM Sales WHERE SaleNumber LIKE ''SALE202505%'' ' +
-      'OR SaleNumber LIKE ''SALE202506%'')');
-    ExecuteSQL(
-      'DELETE FROM Sales WHERE SaleNumber LIKE ''SALE202505%'' ' +
-      'OR SaleNumber LIKE ''SALE202506%''');
-    ExecuteSQL('DELETE FROM Products WHERE ProductCode LIKE ''DEMO%''');
+    ExecuteSQL('DELETE FROM SaleItems');
+    ExecuteSQL('DELETE FROM Sales');
+    ExecuteSQL('DELETE FROM Products');
     ExecuteSQL('DELETE FROM Users WHERE UserID > 1');
     ExecuteSQL('DELETE FROM Categories WHERE CategoryID > 1');
     ExecuteSQL('DELETE FROM Branches WHERE BranchID > 1');
     ExecuteSQL('DELETE FROM SyncMetadata WHERE MetaKey = ''DemoDataVersion''');
   except
   end;
+end;
+
+function TDMDatabase.GetDemoDataVersion: string;
+var
+  Query: TFDQuery;
+begin
+  Result := '';
+  if not FDConnection.Connected then
+    Exit;
+
+  Query := CreateQuery;
+  try
+    try
+      Query.SQL.Text :=
+        'SELECT MetaValue FROM SyncMetadata WHERE MetaKey = ''DemoDataVersion''';
+      Query.Open;
+      if not Query.IsEmpty then
+        Result := Trim(Query.Fields[0].AsString);
+      Query.Close;
+    except
+      Result := '';
+    end;
+  finally
+    Query.Free;
+  end;
+end;
+
+function TDMDatabase.NeedsDemoDataUpgrade: Boolean;
+begin
+  Result := GetDemoDataVersion <> '2';
 end;
 
 function TDMDatabase.LoadDemoData(const AReload: Boolean): Boolean;
@@ -764,13 +791,13 @@ begin
   if FDatabaseType <> dtSQLite then
     Exit;
 
-  if IsDemoDataLoaded and not AReload then
+  if IsDemoDataLoaded and not AReload and not NeedsDemoDataUpgrade then
   begin
     Result := True;
     Exit;
   end;
 
-  if AReload then
+  if AReload or NeedsDemoDataUpgrade then
     ClearDemoData;
 
   Result := RunSQLScriptFromFile('demo_data_sqlite.sql');

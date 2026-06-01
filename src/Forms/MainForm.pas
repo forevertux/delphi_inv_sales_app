@@ -284,8 +284,12 @@ begin
 
   if DMDatabase.LoadDemoData(True) then
   begin
-    ShowMessage('Demo data loaded successfully.' + sLineBreak + sLineBreak +
-      'Logins: admin/Admin@123, manager/Manager@123, employee/Employee@123');
+    ShowMessage('English demo data loaded.' + sLineBreak + sLineBreak +
+      'Logins: admin / Admin@123' + sLineBreak +
+      '        manager / Manager@123' + sLineBreak +
+      '        employee / Employee@123');
+    if Assigned(frmReports) then
+      frmReports.ResetAutoReport;
     LoadDashboardData;
     if Assigned(frmInventory) then
       frmInventory.ActivateModule;
@@ -311,9 +315,9 @@ begin
   end;
 
   if DMDatabase.IsDemoDataLoaded then
-    Msg := 'Demo data is already loaded. Reload and replace demo products/sales?'
+    Msg := 'Replace all inventory, sales and demo users with the English demo dataset?'
   else
-    Msg := 'Load demo products, categories, users and sample sales into the database?';
+    Msg := 'Load English demo data (products, users, categories, sample sales)?';
 
   TDialogService.MessageDialog(Msg, TMsgDlgType.mtConfirmation,
     [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo], TMsgDlgBtn.mbNo, 0, OnLoadDemoConfirm);
