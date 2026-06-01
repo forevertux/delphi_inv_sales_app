@@ -51,6 +51,8 @@ type
     procedure LoadDashboardData;
     procedure UpdateSyncStatus;
     procedure SetRoleBasedVisibility;
+    procedure EnsureChildForm(var AForm: TForm; AFormClass: TFormClass; AParent: TFmxObject);
+    procedure ShowModuleTab(ATab: TTabItem; var AForm: TForm; AFormClass: TFormClass);
     function FormatCurrency(const Value: Double): string;
   public
     { Public declarations }
@@ -179,26 +181,50 @@ begin
   UpdateSyncStatus;
 end;
 
+procedure TfrmMain.EnsureChildForm(var AForm: TForm; AFormClass: TFormClass; AParent: TFmxObject);
+begin
+  if not Assigned(AForm) then
+  begin
+    AForm := AFormClass.Create(Self);
+    AForm.Parent := AParent;
+    AForm.Align := TAlignLayout.Client;
+    AForm.BorderStyle := TFmxFormBorderStyle.None;
+  end;
+  AForm.Visible := True;
+  AForm.BringToFront;
+end;
+
+procedure TfrmMain.ShowModuleTab(ATab: TTabItem; var AForm: TForm; AFormClass: TFormClass);
+begin
+  TabControl1.ActiveTab := ATab;
+  EnsureChildForm(AForm, AFormClass, ATab);
+end;
+
 procedure TfrmMain.btnOpenInventoryClick(Sender: TObject);
 begin
-  TabControl1.ActiveTab := TabInventory;
+  ShowModuleTab(TabInventory, frmInventory, TfrmInventory);
 end;
 
 procedure TfrmMain.btnOpenSalesClick(Sender: TObject);
 begin
-  TabControl1.ActiveTab := TabSales;
+  ShowModuleTab(TabSales, frmSales, TfrmSales);
 end;
 
 procedure TfrmMain.btnOpenReportsClick(Sender: TObject);
 begin
-  TabControl1.ActiveTab := TabReports;
+  ShowModuleTab(TabReports, frmReports, TfrmReports);
 end;
 
 procedure TfrmMain.TabControl1Change(Sender: TObject);
 begin
-  // Refresh data when switching tabs
   if TabControl1.ActiveTab = TabDashboard then
-    LoadDashboardData;
+    LoadDashboardData
+  else if TabControl1.ActiveTab = TabInventory then
+    ShowModuleTab(TabInventory, frmInventory, TfrmInventory)
+  else if TabControl1.ActiveTab = TabSales then
+    ShowModuleTab(TabSales, frmSales, TfrmSales)
+  else if TabControl1.ActiveTab = TabReports then
+    ShowModuleTab(TabReports, frmReports, TfrmReports);
 end;
 
 procedure TfrmMain.btnLogoutClick(Sender: TObject);

@@ -40,7 +40,7 @@ var
 implementation
 
 uses
-  DatabaseModule, HashUtils, ValidationUtils, Constants, FMX.Dialogs;
+  DatabaseModule, HashUtils, ValidationUtils, Constants, SyncService, FMX.Dialogs;
 
 { TAuthService }
 
@@ -153,8 +153,23 @@ begin
 end;
 
 function TAuthService.ValidateSession: Boolean;
+var
+  ActiveUser: TUser;
 begin
   Result := FIsAuthenticated and (FCurrentUser.UserID > 0);
+  if not Result then
+    Exit;
+
+  ActiveUser := GetUserByID(FCurrentUser.UserID);
+  try
+    if (ActiveUser = nil) or not ActiveUser.IsActive then
+    begin
+      Logout;
+      Result := False;
+    end;
+  finally
+    ActiveUser.Free;
+  end;
 end;
 
 function TAuthService.ChangePassword(const OldPassword, NewPassword: string): Boolean;
@@ -298,7 +313,14 @@ begin
 
       Query.ParamByName('IsActive').AsBoolean := User.IsActive;
       Query.ExecSQL;
-      Result := True;
+      User.UserID := DMDatabase.GetLastInsertID;
+      Result := User.UserID > 0;
+      if Result then
+      begin
+        if Assigned(GSyncService) then
+          GSyncService.LogChange('Users', User.UserID, soInsert);
+        ShowMessage(MSG_SAVE_SUCCESS);
+      end;
     except
       on E: Exception do
         ShowMessage('Error creating user: ' + E.Message);
@@ -354,6 +376,8 @@ begin
       Query.ParamByName('UserID').AsInteger := User.UserID;
       Query.ExecSQL;
       Result := Query.RowsAffected > 0;
+      if Result and Assigned(GSyncService) then
+        GSyncService.LogChange('Users', User.UserID, soUpdate);
     except
       on E: Exception do
         ShowMessage('Error updating user: ' + E.Message);
@@ -389,6 +413,8 @@ begin
       Query.ParamByName('UserID').AsInteger := UserID;
       Query.ExecSQL;
       Result := Query.RowsAffected > 0;
+      if Result and Assigned(GSyncService) then
+        GSyncService.LogChange('Users', UserID, soDelete);
     except
       on E: Exception do
         ShowMessage('Error deleting user: ' + E.Message);

@@ -115,7 +115,8 @@ begin
       'LEFT JOIN Users u ON s.EmployeeID = u.UserID ' +
       'LEFT JOIN Branches b ON s.BranchID = b.BranchID ' +
       'LEFT JOIN SaleItems si ON s.SaleID = si.SaleID ' +
-      'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ';
+      'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+      'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ';
 
     if BranchID > 0 then
       SQL := SQL + 'AND s.BranchID = :BranchID ';
@@ -130,6 +131,7 @@ begin
     Query.SQL.Text := SQL;
     Query.ParamByName('StartDate').AsDateTime := StartDate;
     Query.ParamByName('EndDate').AsDateTime := EndDate;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
 
     if BranchID > 0 then
       Query.ParamByName('BranchID').AsInteger := BranchID;
@@ -267,6 +269,7 @@ begin
       'INNER JOIN Sales s ON si.SaleID = s.SaleID ' +
       'LEFT JOIN Categories c ON p.CategoryID = c.CategoryID ' +
       'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+      'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
       'GROUP BY p.ProductID, p.ProductCode, p.ProductName, c.CategoryName ' +
       'ORDER BY TotalQuantitySold DESC';
 
@@ -280,6 +283,7 @@ begin
     Query.SQL.Text := SQL;
     Query.ParamByName('StartDate').AsDateTime := StartDate;
     Query.ParamByName('EndDate').AsDateTime := EndDate;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
     Query.Open;
 
     Result := Query;
@@ -327,6 +331,7 @@ begin
       'INNER JOIN SaleItems si ON p.ProductID = si.ProductID ' +
       'INNER JOIN Sales s ON si.SaleID = s.SaleID ' +
       'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+      'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
       'GROUP BY c.CategoryID, c.CategoryName ' +
       'ORDER BY TotalRevenue DESC';
 
@@ -334,6 +339,7 @@ begin
     Query.SQL.Text := SQL;
     Query.ParamByName('StartDate').AsDateTime := StartDate;
     Query.ParamByName('EndDate').AsDateTime := EndDate;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
     Query.Open;
 
     Result := Query;
@@ -437,6 +443,7 @@ begin
           '  SUM(s.TaxAmount) AS TotalTax ' +
           'FROM Sales s ' +
           'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+          'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
           'GROUP BY CONVERT(DATE, s.SaleDate) ' +
           'ORDER BY SaleDate';
 
@@ -452,6 +459,7 @@ begin
           '  SUM(s.TaxAmount) AS TotalTax ' +
           'FROM Sales s ' +
           'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+          'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
           'GROUP BY DATE(s.SaleDate) ' +
           'ORDER BY SaleDate';
 
@@ -467,6 +475,7 @@ begin
           '  SUM(s.TaxAmount) AS TotalTax ' +
           'FROM Sales s ' +
           'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+          'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
           'GROUP BY DATE(s.SaleDate) ' +
           'ORDER BY SaleDate';
 
@@ -482,6 +491,7 @@ begin
           '  SUM(s.TaxAmount) AS TotalTax ' +
           'FROM Sales s ' +
           'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+          'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
           'GROUP BY DATE(s.SaleDate) ' +
           'ORDER BY SaleDate';
     end;
@@ -490,6 +500,7 @@ begin
     Query.SQL.Text := SQL;
     Query.ParamByName('StartDate').AsDateTime := StartDate;
     Query.ParamByName('EndDate').AsDateTime := EndDate;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
     Query.Open;
 
     Result := Query;
@@ -759,6 +770,7 @@ begin
       'INNER JOIN Sales s ON si.SaleID = s.SaleID ' +
       'LEFT JOIN Categories c ON p.CategoryID = c.CategoryID ' +
       'WHERE s.SaleDate BETWEEN :StartDate AND :EndDate ' +
+      'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
       'GROUP BY p.ProductID, p.ProductCode, p.ProductName, c.CategoryName, ' +
       '  p.CostPrice, p.UnitPrice ' +
       'HAVING SUM(si.Quantity) > 0 ' +
@@ -768,6 +780,7 @@ begin
     Query.SQL.Text := SQL;
     Query.ParamByName('StartDate').AsDateTime := StartDate;
     Query.ParamByName('EndDate').AsDateTime := EndDate;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
     Query.Open;
 
     Result := Query;

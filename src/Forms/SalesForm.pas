@@ -57,6 +57,7 @@ type
     procedure UpdateTotals;
     procedure ClearProducts;
     function GetSelectedProduct: TProduct;
+    function GetCartQuantityForProduct(ProductID: Integer): Integer;
     function FormatCurrency(const Value: Double): string;
   public
     { Public declarations }
@@ -215,6 +216,20 @@ begin
   end;
 end;
 
+function TfrmSales.GetCartQuantityForProduct(ProductID: Integer): Integer;
+var
+  I: Integer;
+  Item: TSaleItem;
+begin
+  Result := 0;
+  for I := 0 to FCurrentSale.Items.Count - 1 do
+  begin
+    Item := FCurrentSale.Items[I];
+    if Item.ProductID = ProductID then
+      Result := Result + Item.Quantity;
+  end;
+end;
+
 procedure TfrmSales.edtProductSearchChange(Sender: TObject);
 begin
   LoadProducts(edtProductSearch.Text);
@@ -249,9 +264,10 @@ begin
     Exit;
   end;
 
-  if not Product.CanSell(Qty) then
+  if not GProductService.CheckStock(Product.ProductID, GetCartQuantityForProduct(Product.ProductID) + Qty) then
   begin
-    ShowMessage(Format('Insufficient stock. Available: %d', [Product.Quantity]));
+    ShowMessage(Format('Insufficient stock for %s (requested in cart: %d)',
+      [Product.ProductName, GetCartQuantityForProduct(Product.ProductID) + Qty]));
     Exit;
   end;
 
@@ -358,7 +374,7 @@ begin
   else
     FCurrentSale.PaymentMethod := 'Cash';
 
-  FCurrentSale.PaymentStatus := 'Paid';
+  FCurrentSale.PaymentStatus := PAYMENT_PAID;
 
   // Process sale
   TDialogService.MessageDialog(
@@ -369,7 +385,6 @@ begin
     begin
       if AResult = mrYes then
       begin
-        FCurrentSale.SaleNumber := GSalesService.GenerateSaleNumber;
         if GSalesService.CreateSale(FCurrentSale) then
         begin
           ShowMessage(Format('Sale completed successfully!%sSale Number: %s',

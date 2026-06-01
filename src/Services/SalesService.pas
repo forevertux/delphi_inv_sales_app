@@ -36,7 +36,7 @@ var
 implementation
 
 uses
-  DatabaseModule, ValidationUtils, Constants, AuthService, FMX.Dialogs,
+  DatabaseModule, ValidationUtils, Constants, AuthService, SyncService, FMX.Dialogs,
   ProductService;
 
 { TSalesService }
@@ -195,8 +195,13 @@ begin
 
     Query := DMDatabase.CreateQuery;
     try
-      SQL := 'UPDATE Products SET Quantity = Quantity + :Quantity, ' +
-             'UpdatedAt = CURRENT_TIMESTAMP WHERE ProductID = :ProductID';
+      if IsReverse then
+        SQL := 'UPDATE Products SET Quantity = Quantity + :Quantity, ' +
+               'UpdatedAt = CURRENT_TIMESTAMP WHERE ProductID = :ProductID'
+      else
+        SQL := 'UPDATE Products SET Quantity = Quantity + :Quantity, ' +
+               'UpdatedAt = CURRENT_TIMESTAMP WHERE ProductID = :ProductID ' +
+               'AND Quantity + :Quantity >= 0';
       Query.SQL.Text := SQL;
       Query.ParamByName('Quantity').AsInteger := AdjustmentQty;
       Query.ParamByName('ProductID').AsInteger := ProductID;
@@ -280,9 +285,6 @@ begin
   end;
 
   try
-    if IsEmptyOrWhiteSpace(Sale.SaleNumber) then
-      Sale.SaleNumber := GenerateSaleNumber;
-
     if Sale.EmployeeID <= 0 then
     begin
       ShowMessage('Employee is required');
@@ -305,6 +307,9 @@ begin
     QueryItem := DMDatabase.CreateQuery;
     try
       try
+      if IsEmptyOrWhiteSpace(Sale.SaleNumber) then
+        Sale.SaleNumber := GenerateSaleNumber;
+
       SQL := 'INSERT INTO Sales (SaleNumber, SaleDate, BranchID, EmployeeID, ' +
              'CustomerName, CustomerPhone, SubTotal, TaxAmount, DiscountAmount, ' +
              'TotalAmount, PaymentMethod, PaymentStatus, Notes, IsSynced) ' +
@@ -344,6 +349,8 @@ begin
         Exit;
       end;
 
+      Sale.SaleID := SaleID;
+
       for Item in Sale.Items do
       begin
         // Calculate line total
@@ -377,6 +384,8 @@ begin
       // Commit transaction
       DMDatabase.CommitTrans;
       Result := True;
+      if Assigned(GSyncService) then
+        GSyncService.LogChange('Sales', Sale.SaleID, soInsert);
       ShowMessage(MSG_SAVE_SUCCESS);
 
       except
@@ -534,11 +543,13 @@ begin
            'LEFT JOIN Branches b ON s.BranchID = b.BranchID ' +
            'LEFT JOIN Users u ON s.EmployeeID = u.UserID ' +
            'WHERE s.BranchID = :BranchID ' +
+           'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
            'ORDER BY s.SaleDate DESC, s.SaleID DESC';
 
     Query.Close;
     Query.SQL.Text := SQL;
     Query.ParamByName('BranchID').AsInteger := BranchID;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
     Query.Open;
 
     Query.First;
@@ -573,11 +584,13 @@ begin
            'LEFT JOIN Branches b ON s.BranchID = b.BranchID ' +
            'LEFT JOIN Users u ON s.EmployeeID = u.UserID ' +
            'WHERE s.EmployeeID = :EmployeeID ' +
+           'AND (s.PaymentStatus IS NULL OR s.PaymentStatus <> :CancelledStatus) ' +
            'ORDER BY s.SaleDate DESC, s.SaleID DESC';
 
     Query.Close;
     Query.SQL.Text := SQL;
     Query.ParamByName('EmployeeID').AsInteger := EmployeeID;
+    Query.ParamByName('CancelledStatus').AsString := PAYMENT_CANCELLED;
     Query.Open;
 
     Query.First;
@@ -749,6 +762,8 @@ begin
 
         DMDatabase.CommitTrans;
         Result := True;
+        if Assigned(GSyncService) then
+          GSyncService.LogChange('Sales', SaleID, soUpdate);
         ShowMessage('Sale cancelled successfully');
       except
         on E: Exception do

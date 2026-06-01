@@ -32,6 +32,7 @@ type
     procedure UpdateSyncMetadata(const Key, Value: string);
     function GetSyncMetadata(const Key, DefaultValue: string): string;
     function JoinCSV(const List: TStringList): string;
+    function GetPrimaryKeyField(const TableName: string): string;
     function BuildInsertSQL(const TableName: string; Data: TJSONObject): string;
     function BuildUpdateSQL(const TableName: string; Data: TJSONObject; RecordID: Integer): string;
   public
@@ -150,15 +151,44 @@ end;
 procedure TSyncService.EnsureSyncLogTable;
 var
   Query: TFDQuery;
+  CreateSyncLogSQL: string;
 begin
+  if not DMDatabase.IsConnected then
+    Exit;
+
   try
     Query := DMDatabase.qryGeneral;
 
-    // Create SyncLog table if not exists
-    Query.Close;
-    Query.SQL.Text :=
-      'CREATE TABLE IF NOT EXISTS SyncLog (' +
-      'SyncID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+    case DMDatabase.DatabaseType of
+      dtSQLServer:
+        CreateSyncLogSQL :=
+          'IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = ''SyncLog'') ' +
+          'CREATE TABLE SyncLog (' +
+          'SyncID INT IDENTITY(1,1) PRIMARY KEY, ' +
+          'TableName NVARCHAR(100) NOT NULL, ' +
+          'RecordID INT NOT NULL, ' +
+          'Operation NVARCHAR(20) NOT NULL, ' +
+          'SyncStatus NVARCHAR(20) DEFAULT ''Pending'', ' +
+          'ErrorMessage NVARCHAR(MAX), ' +
+          'DeviceID NVARCHAR(100), ' +
+          'CreatedAt DATETIME DEFAULT GETDATE(), ' +
+          'SyncedAt DATETIME)';
+      dtMySQL:
+        CreateSyncLogSQL :=
+          'CREATE TABLE IF NOT EXISTS SyncLog (' +
+          'SyncID INT AUTO_INCREMENT PRIMARY KEY, ' +
+          'TableName VARCHAR(100) NOT NULL, ' +
+          'RecordID INT NOT NULL, ' +
+          'Operation VARCHAR(20) NOT NULL, ' +
+          'SyncStatus VARCHAR(20) DEFAULT ''Pending'', ' +
+          'ErrorMessage TEXT, ' +
+          'DeviceID VARCHAR(100), ' +
+          'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
+          'SyncedAt DATETIME)';
+      else
+        CreateSyncLogSQL :=
+          'CREATE TABLE IF NOT EXISTS SyncLog (' +
+          'SyncID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
       'TableName TEXT NOT NULL, ' +
       'RecordID INTEGER NOT NULL, ' +
       'Operation TEXT NOT NULL, ' +
@@ -167,15 +197,27 @@ begin
       'DeviceID TEXT, ' +
       'CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP, ' +
       'SyncedAt DATETIME)';
+    end;
+
+    Query.Close;
+    Query.SQL.Text := CreateSyncLogSQL;
     Query.ExecSQL;
 
     // Create SyncMetadata table
     Query.Close;
-    Query.SQL.Text :=
-      'CREATE TABLE IF NOT EXISTS SyncMetadata (' +
-      'MetaKey TEXT PRIMARY KEY, ' +
-      'MetaValue TEXT, ' +
-      'UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)';
+    if DMDatabase.DatabaseType = dtSQLServer then
+      Query.SQL.Text :=
+        'IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = ''SyncMetadata'') ' +
+        'CREATE TABLE SyncMetadata (' +
+        'MetaKey NVARCHAR(100) PRIMARY KEY, ' +
+        'MetaValue NVARCHAR(MAX), ' +
+        'UpdatedAt DATETIME DEFAULT GETDATE())'
+    else
+      Query.SQL.Text :=
+        'CREATE TABLE IF NOT EXISTS SyncMetadata (' +
+        'MetaKey TEXT PRIMARY KEY, ' +
+        'MetaValue TEXT, ' +
+        'UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP)';
     Query.ExecSQL;
 
     // Create indexes for performance
@@ -350,9 +392,17 @@ begin
   try
     Query := DMDatabase.qryGeneral;
 
-    // Only delete successfully synced records older than 7 days
-    SQL := 'DELETE FROM SyncLog WHERE SyncStatus = :SyncStatus ' +
-           'AND SyncedAt < datetime(''now'', ''-7 days'')';
+    case DMDatabase.DatabaseType of
+      dtSQLServer:
+        SQL := 'DELETE FROM SyncLog WHERE SyncStatus = :SyncStatus ' +
+               'AND SyncedAt < DATEADD(day, -7, GETDATE())';
+      dtMySQL, dtPostgreSQL:
+        SQL := 'DELETE FROM SyncLog WHERE SyncStatus = :SyncStatus ' +
+               'AND SyncedAt < (CURRENT_TIMESTAMP - INTERVAL ''7'' DAY)';
+    else
+      SQL := 'DELETE FROM SyncLog WHERE SyncStatus = :SyncStatus ' +
+             'AND SyncedAt < datetime(''now'', ''-7 days'')';
+    end;
 
     Query.Close;
     Query.SQL.Text := SQL;
@@ -524,6 +574,24 @@ begin
   end;
 end;
 
+function TSyncService.GetPrimaryKeyField(const TableName: string): string;
+begin
+  if SameText(TableName, 'Products') then
+    Result := 'ProductID'
+  else if SameText(TableName, 'Sales') then
+    Result := 'SaleID'
+  else if SameText(TableName, 'SaleItems') then
+    Result := 'SaleItemID'
+  else if SameText(TableName, 'Users') then
+    Result := 'UserID'
+  else if SameText(TableName, 'Branches') then
+    Result := 'BranchID'
+  else if SameText(TableName, 'Categories') then
+    Result := 'CategoryID'
+  else
+    Result := 'ID';
+end;
+
 function TSyncService.BuildInsertSQL(const TableName: string; Data: TJSONObject): string;
 var
   FieldNames, Placeholders: TStringList;
@@ -534,16 +602,7 @@ begin
   FieldNames := TStringList.Create;
   Placeholders := TStringList.Create;
   try
-    if SameText(TableName, 'Products') then
-      PKField := 'ProductID'
-    else if SameText(TableName, 'Sales') then
-      PKField := 'SaleID'
-    else if SameText(TableName, 'SaleItems') then
-      PKField := 'SaleItemID'
-    else if SameText(TableName, 'Users') then
-      PKField := 'UserID'
-    else
-      PKField := 'ID';
+    PKField := GetPrimaryKeyField(TableName);
 
     for I := 0 to Data.Count - 1 do
     begin
@@ -579,18 +638,7 @@ var
   PKField: string;
 begin
   SetClause := '';
-
-  // Determine primary key field name
-  if SameText(TableName, 'Products') then
-    PKField := 'ProductID'
-  else if SameText(TableName, 'Sales') then
-    PKField := 'SaleID'
-  else if SameText(TableName, 'SaleItems') then
-    PKField := 'SaleItemID'
-  else if SameText(TableName, 'Users') then
-    PKField := 'UserID'
-  else
-    PKField := 'ID';
+  PKField := GetPrimaryKeyField(TableName);
 
   // Build SET clause
   for I := 0 to Data.Count - 1 do
@@ -679,8 +727,8 @@ begin
             if not SameText(Operation, OP_DELETE) then
             begin
               RecordQuery := GetTableQuery(TableName);
-              SQL := Format('SELECT * FROM %s WHERE %sID = :RecordID',
-                [TableName, Copy(TableName, 1, Length(TableName) - 1)]);
+              SQL := Format('SELECT * FROM %s WHERE %s = :RecordID',
+                [TableName, GetPrimaryKeyField(TableName)]);
 
               RecordQuery.Close;
               RecordQuery.SQL.Text := SQL;
@@ -979,17 +1027,7 @@ begin
   try
     Query := GetTableQuery(TableName);
 
-    // Determine primary key field
-    if SameText(TableName, 'Products') then
-      PKField := 'ProductID'
-    else if SameText(TableName, 'Sales') then
-      PKField := 'SaleID'
-    else if SameText(TableName, 'SaleItems') then
-      PKField := 'SaleItemID'
-    else if SameText(TableName, 'Users') then
-      PKField := 'UserID'
-    else
-      PKField := 'ID';
+    PKField := GetPrimaryKeyField(TableName);
 
     // Get record ID
     RecordID := RecordData.GetValue<Integer>(PKField, 0);
@@ -1077,17 +1115,7 @@ begin
   try
     Query := GetTableQuery(TableName);
 
-    // Determine primary key field
-    if SameText(TableName, 'Products') then
-      PKField := 'ProductID'
-    else if SameText(TableName, 'Sales') then
-      PKField := 'SaleID'
-    else if SameText(TableName, 'SaleItems') then
-      PKField := 'SaleItemID'
-    else if SameText(TableName, 'Users') then
-      PKField := 'UserID'
-    else
-      PKField := 'ID';
+    PKField := GetPrimaryKeyField(TableName);
 
     // Soft delete if IsActive field exists, otherwise hard delete
     SQL := Format('SELECT * FROM %s WHERE %s = :RecordID LIMIT 1', [TableName, PKField]);

@@ -188,7 +188,7 @@ INSERT INTO Categories (CategoryCode, CategoryName, Description) VALUES
 -- Default Admin User (Password: Admin@123 - hashed with SHA256)
 -- Note: In production, use proper password hashing (bcrypt, scrypt, etc.)
 INSERT INTO Users (Username, PasswordHash, FullName, Email, RoleID, BranchID) VALUES
-('admin', 'EF797C8118F02DFB649607DD5D3F8C7623048C9C063D532CC95C5ED7A898A64F', 'System Administrator', 'admin@company.com', 1, 1),
+('admin', 'E86F78A8A3CAF0B60D8E74E5942AA6D86DC150CD3C03338AEF25B7D2D7E3ACC7', 'System Administrator', 'admin@company.com', 1, 1),
 ('manager', 'C1C224B03CD9BC7B6A86D77F5DACE40191766C485CD55DC48CAF9AC873335C6F', 'Branch Manager', 'manager@company.com', 2, 1),
 ('employee', '8D969EEF6ECAD3C29A3A629280E686CF0C3F5D5A86AFF3CA12020C923ADC6C92', 'Sales Employee', 'employee@company.com', 3, 1);
 

@@ -157,6 +157,6 @@ INSERT OR IGNORE INTO Categories (CategoryID, CategoryCode, CategoryName)
 VALUES (1, 'GEN', 'General');
 
 -- Insert default admin user (password: Admin@123)
--- SHA256 hash of 'Admin@123'
+-- SHA256 hash of 'Admin@123' (Delphi THashSHA2, UTF-8)
 INSERT OR IGNORE INTO Users (UserID, Username, PasswordHash, FullName, RoleID, BranchID)
-VALUES (1, 'admin', '6B3A55E0261B0304143F805A24924D0C1C44524821305F31D9277843B8A10F4E', 'System Administrator', 1, 1);
+VALUES (1, 'admin', 'E86F78A8A3CAF0B60D8E74E5942AA6D86DC150CD3C03338AEF25B7D2D7E3ACC7', 'System Administrator', 1, 1);
