@@ -62,6 +62,8 @@ type
     procedure OnProcessSaleDialogClose(const AResult: TModalResult);
     procedure OnClearSaleDialogClose(const AResult: TModalResult);
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure ActivateModule;
   end;
 
@@ -76,6 +78,18 @@ uses
   ProductService, SalesService, AuthService, FMX.DialogService, Constants;
 
 { TfrmSales }
+
+constructor TfrmSales.Create(AOwner: TComponent);
+begin
+  inherited;
+  FormCreate(Self);
+end;
+
+destructor TfrmSales.Destroy;
+begin
+  FormDestroy(Self);
+  inherited;
+end;
 
 procedure TfrmSales.FormCreate(Sender: TObject);
 begin

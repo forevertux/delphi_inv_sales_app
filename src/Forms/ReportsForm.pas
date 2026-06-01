@@ -40,6 +40,7 @@ type
     procedure ClearGrid;
     function GetExportFileName(const Extension: string): string;
   public
+    constructor Create(AOwner: TComponent); override;
     procedure ActivateModule;
   end;
 
@@ -55,6 +56,12 @@ uses
   FMX.DialogService;
 
 { TfrmReports }
+
+constructor TfrmReports.Create(AOwner: TComponent);
+begin
+  inherited;
+  FormCreate(Self);
+end;
 
 procedure TfrmReports.FormCreate(Sender: TObject);
 begin

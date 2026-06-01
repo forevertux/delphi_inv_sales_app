@@ -43,6 +43,8 @@ type
     procedure EditProduct(Product: TProduct);
     procedure OnDeleteDialogClose(const AResult: TModalResult);
   public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure ActivateModule;
   end;
 
@@ -61,6 +63,18 @@ uses
   ;
 
 { TfrmInventory }
+
+constructor TfrmInventory.Create(AOwner: TComponent);
+begin
+  inherited;
+  FormCreate(Self);
+end;
+
+destructor TfrmInventory.Destroy;
+begin
+  FormDestroy(Self);
+  inherited;
+end;
 
 procedure TfrmInventory.FormCreate(Sender: TObject);
 begin

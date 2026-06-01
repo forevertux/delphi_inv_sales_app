@@ -3,7 +3,6 @@ object frmReports: TfrmReports
   Size.Width = 900.000000000000000000
   Size.Height = 600.000000000000000000
   Size.PlatformDefault = False
-  OnCreate = FormCreate
   DesignerMasterStyle = 0
   object LayoutTop: TLayout
     Align = Top
