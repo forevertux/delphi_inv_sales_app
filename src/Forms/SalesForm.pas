@@ -59,6 +59,8 @@ type
     function GetSelectedProduct: TProduct;
     function GetCartQuantityForProduct(ProductID: Integer): Integer;
     function FormatCurrency(const Value: Double): string;
+    procedure OnProcessSaleDialogClose(const AResult: TModalResult);
+    procedure OnClearSaleDialogClose(const AResult: TModalResult);
   public
     procedure ActivateModule;
   end;
@@ -380,23 +382,29 @@ begin
 
   FCurrentSale.PaymentStatus := PAYMENT_PAID;
 
-  // Process sale
   TDialogService.MessageDialog(
     Format('Process sale for %s?', [FormatCurrency(FCurrentSale.TotalAmount)]),
     TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
-    TMsgDlgBtn.mbYes, 0,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then
-      begin
-        if GSalesService.CreateSale(FCurrentSale) then
-        begin
-          ShowMessage(Format('Sale completed successfully!%sSale Number: %s',
-            [sLineBreak, FCurrentSale.SaleNumber]));
-          InitializeNewSale;
-        end;
-      end;
-    end);
+    TMsgDlgBtn.mbYes, 0, OnProcessSaleDialogClose);
+end;
+
+procedure TfrmSales.OnProcessSaleDialogClose(const AResult: TModalResult);
+begin
+  if AResult <> mrYes then
+    Exit;
+
+  if GSalesService.CreateSale(FCurrentSale) then
+  begin
+    ShowMessage(Format('Sale completed successfully!%sSale Number: %s',
+      [sLineBreak, FCurrentSale.SaleNumber]));
+    InitializeNewSale;
+  end;
+end;
+
+procedure TfrmSales.OnClearSaleDialogClose(const AResult: TModalResult);
+begin
+  if AResult = mrYes then
+    InitializeNewSale;
 end;
 
 procedure TfrmSales.btnClearSaleClick(Sender: TObject);
@@ -405,12 +413,7 @@ begin
   begin
     TDialogService.MessageDialog('Clear current sale?',
       TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
-      TMsgDlgBtn.mbNo, 0,
-      procedure(const AResult: TModalResult)
-      begin
-        if AResult = mrYes then
-          InitializeNewSale;
-      end);
+      TMsgDlgBtn.mbNo, 0, OnClearSaleDialogClose);
   end
   else
     InitializeNewSale;

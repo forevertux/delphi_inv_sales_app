@@ -28,12 +28,12 @@ type
     procedure btnAddClick(Sender: TObject);
     procedure btnEditClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
-    procedure GridProductsCellDblTap(const Column: TColumn; const Row: Integer);
     procedure cmbCategoryChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
     FProducts: TArray<TProduct>;
+    FPendingDeleteProductID: Integer;
     procedure LoadProducts;
     procedure LoadCategories;
     procedure SetupGrid;
@@ -41,6 +41,7 @@ type
     procedure ClearProducts;
     function GetSelectedProduct: TProduct;
     procedure EditProduct(Product: TProduct);
+    procedure OnDeleteDialogClose(const AResult: TModalResult);
   public
     procedure ActivateModule;
   end;
@@ -53,7 +54,11 @@ implementation
 {$R *.fmx}
 
 uses
-  ProductService, AuthService, FMX.DialogService, DatabaseModule, FireDAC.Comp.Client;
+  ProductService, AuthService, FMX.DialogService, DatabaseModule, FireDAC.Comp.Client
+{$IFDEF MSWINDOWS}
+  , Vcl.Dialogs
+{$ENDIF}
+  ;
 
 { TfrmInventory }
 
@@ -61,7 +66,7 @@ procedure TfrmInventory.FormCreate(Sender: TObject);
 begin
   SetupGrid;
   edtSearch.TextPrompt := 'Search products...';
-  GridProducts.OnCellDblTap := GridProductsCellDblTap;
+  FPendingDeleteProductID := 0;
 end;
 
 procedure TfrmInventory.ActivateModule;
@@ -290,89 +295,80 @@ begin
   EditProduct(Product);
 end;
 
-procedure TfrmInventory.GridProductsCellDblTap(const Column: TColumn; const Row: Integer);
-begin
-  btnEditClick(nil);
-end;
-
 procedure TfrmInventory.EditProduct(Product: TProduct);
 var
-  InputCode, InputName, InputDesc, InputBarcode: string;
-  InputPrice, InputCost: string;
-  InputQty, InputMinStock, InputMaxStock: string;
+  SCode, SName, SDesc, SBarcode, SPrice, SCost, SQty, SMin, SMax: string;
   Success: Boolean;
 begin
-  // Simple input dialogs for editing
-  // In a real application, you would create a proper dialog form
+{$IFDEF MSWINDOWS}
+  SCode := Product.ProductCode;
+  if not Vcl.Dialogs.InputQuery('Product Code', 'Code:', SCode) then
+    Exit;
+  Product.ProductCode := SCode;
 
-  TDialogService.InputQuery('Product Code', ['Code:'],
-    [Product.ProductCode],
-    procedure(const AResult: TModalResult; const AValues: array of string)
-    begin
-      if AResult = mrOk then
-      begin
-        InputCode := AValues[0];
+  SName := Product.ProductName;
+  if not Vcl.Dialogs.InputQuery('Product Name', 'Name:', SName) then
+    Exit;
+  Product.ProductName := SName;
 
-        TDialogService.InputQuery('Product Details', ['Name:', 'Description:', 'Barcode:'],
-          [Product.ProductName, Product.Description, Product.Barcode],
-          procedure(const AResult2: TModalResult; const AValues2: array of string)
-          begin
-            if AResult2 = mrOk then
-            begin
-              InputName := AValues2[0];
-              InputDesc := AValues2[1];
-              InputBarcode := AValues2[2];
+  SDesc := Product.Description;
+  if not Vcl.Dialogs.InputQuery('Description', 'Description:', SDesc) then
+    Exit;
+  Product.Description := SDesc;
 
-              TDialogService.InputQuery('Pricing', ['Unit Price:', 'Cost Price:'],
-                [Format('%.2f', [Product.UnitPrice]), Format('%.2f', [Product.CostPrice])],
-                procedure(const AResult3: TModalResult; const AValues3: array of string)
-                begin
-                  if AResult3 = mrOk then
-                  begin
-                    InputPrice := AValues3[0];
-                    InputCost := AValues3[1];
+  SBarcode := Product.Barcode;
+  if not Vcl.Dialogs.InputQuery('Barcode', 'Barcode:', SBarcode) then
+    Exit;
+  Product.Barcode := SBarcode;
 
-                    TDialogService.InputQuery('Stock Levels', ['Quantity:', 'Min Stock:', 'Max Stock:'],
-                      [IntToStr(Product.Quantity), IntToStr(Product.MinStockLevel), IntToStr(Product.MaxStockLevel)],
-                      procedure(const AResult4: TModalResult; const AValues4: array of string)
-                      begin
-                        if AResult4 = mrOk then
-                        begin
-                          InputQty := AValues4[0];
-                          InputMinStock := AValues4[1];
-                          InputMaxStock := AValues4[2];
+  SPrice := Format('%.2f', [Product.UnitPrice]);
+  if not Vcl.Dialogs.InputQuery('Unit Price', 'Unit Price:', SPrice) then
+    Exit;
+  Product.UnitPrice := StrToFloatDef(SPrice, 0);
 
-                          // Update product
-                          Product.ProductCode := InputCode;
-                          Product.ProductName := InputName;
-                          Product.Description := InputDesc;
-                          Product.Barcode := InputBarcode;
-                          Product.UnitPrice := StrToFloatDef(InputPrice, 0);
-                          Product.CostPrice := StrToFloatDef(InputCost, 0);
-                          Product.Quantity := StrToIntDef(InputQty, 0);
-                          Product.MinStockLevel := StrToIntDef(InputMinStock, 0);
-                          Product.MaxStockLevel := StrToIntDef(InputMaxStock, 0);
+  SCost := Format('%.2f', [Product.CostPrice]);
+  if not Vcl.Dialogs.InputQuery('Cost Price', 'Cost Price:', SCost) then
+    Exit;
+  Product.CostPrice := StrToFloatDef(SCost, 0);
 
-                          // For new products, set a default category
-                          if Product.CategoryID = 0 then
-                            Product.CategoryID := 1; // Default category
+  SQty := IntToStr(Product.Quantity);
+  if not Vcl.Dialogs.InputQuery('Quantity', 'Quantity:', SQty) then
+    Exit;
+  Product.Quantity := StrToIntDef(SQty, 0);
 
-                          // Save product
-                          if Product.ProductID = 0 then
-                            Success := GProductService.CreateProduct(Product)
-                          else
-                            Success := GProductService.UpdateProduct(Product);
+  SMin := IntToStr(Product.MinStockLevel);
+  if not Vcl.Dialogs.InputQuery('Min Stock', 'Min Stock:', SMin) then
+    Exit;
+  Product.MinStockLevel := StrToIntDef(SMin, 0);
 
-                          if Success then
-                            LoadProducts;
-                        end;
-                      end);
-                  end;
-                end);
-            end;
-          end);
-      end;
-    end);
+  SMax := IntToStr(Product.MaxStockLevel);
+  if not Vcl.Dialogs.InputQuery('Max Stock', 'Max Stock:', SMax) then
+    Exit;
+  Product.MaxStockLevel := StrToIntDef(SMax, 0);
+
+  if Product.CategoryID = 0 then
+    Product.CategoryID := 1;
+
+  if Product.ProductID = 0 then
+    Success := GProductService.CreateProduct(Product)
+  else
+    Success := GProductService.UpdateProduct(Product);
+
+  if Success then
+    LoadProducts;
+{$ELSE}
+  ShowMessage('Product editing is available on Windows desktop in this build.');
+{$ENDIF}
+end;
+
+procedure TfrmInventory.OnDeleteDialogClose(const AResult: TModalResult);
+begin
+  if (AResult = mrYes) and (FPendingDeleteProductID > 0) then
+  begin
+    if GProductService.DeleteProduct(FPendingDeleteProductID) then
+      LoadProducts;
+  end;
+  FPendingDeleteProductID := 0;
 end;
 
 procedure TfrmInventory.btnDeleteClick(Sender: TObject);
@@ -394,18 +390,11 @@ begin
     Exit;
   end;
 
+  FPendingDeleteProductID := Product.ProductID;
   TDialogService.MessageDialog(
     Format('Are you sure you want to delete "%s"?', [Product.ProductName]),
     TMsgDlgType.mtConfirmation, [TMsgDlgBtn.mbYes, TMsgDlgBtn.mbNo],
-    TMsgDlgBtn.mbNo, 0,
-    procedure(const AResult: TModalResult)
-    begin
-      if AResult = mrYes then
-      begin
-        if GProductService.DeleteProduct(Product.ProductID) then
-          LoadProducts;
-      end;
-    end);
+    TMsgDlgBtn.mbNo, 0, OnDeleteDialogClose);
 end;
 
 end.
